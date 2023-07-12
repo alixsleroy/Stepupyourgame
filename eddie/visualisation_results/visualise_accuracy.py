@@ -5,8 +5,10 @@ import sys
 import numpy as np
 from scipy.stats import norm
 import scipy.integrate as integrate
-from settings_and_potential import *
+from settings_and_potential_eddie import *
 import pandas as pd
+
+
 font_size=35
 lw=4
 
@@ -21,11 +23,9 @@ import matplotlib.ticker as mtick
 plt.rc('xtick', labelsize=font_size) 
 plt.rc('ytick', labelsize=font_size) 
 
-# nrank = sys.argv[0]
-# /home/s2133976/OneDrive/ExtendedProject/Code/Weak SDE approximation/C++/eddie
 
 ## hard problem generated on lap top 
-os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Weak SDE approximation/C++/eddie")
+os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/eddie")
 
 
 dta_noada = pd.DataFrame()
@@ -34,11 +34,11 @@ dta_re = pd.DataFrame()
 
 for i in range(len(dtlist)):
     dti=dtlist[i]
-    file_i = "results_eddie/data/vec_noadai="+str(i)+".txt"
+    file_i = "data_easy500000/vec_noadai="+str(i)+".txt"
     x_noada=np.hstack(openCfile(file_i))
-    file_i = "results_eddie/data/vec_tri="+str(i)+".txt"
+    file_i = "data_easy500000/vec_tri="+str(i)+".txt"
     x_tr=np.hstack(openCfile(file_i))
-    file_i = "results_eddie/data/vec_rei="+str(i)+".txt"
+    file_i = "data_easy500000/vec_rei="+str(i)+".txt"
     x_re=np.hstack(openCfile(file_i))
 
     dta_noada["x"+str(i)] = x_noada
@@ -82,6 +82,8 @@ ax1.plot(np.log(dtlist),np.log(weak_list_re),"x",label="Naive rescaling",color=m
 x,y_x,a_round = get_slope(weak_list_re,dtlist)
 ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color=mygreen)
 ax1.legend()
+
+os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/eddie/visualisation_results")
 fig.savefig('figures/accuracy.png')
 
 plt.show()
