@@ -9,14 +9,6 @@
 //  Baoab. This code implements Euler-Maruyama for the transformed SDE. 
 //  
 # include <math.h>
-// # include <cmath> 
-// # include <complex.h>
-// # include <stdlib.h>
-// # include <iostream>
-// # include <vector>
-// # include <stdio.h>
-// # include <time.h>
-// # include "normal.h"
 #include <filesystem>
 #include <cstring>
 #include <stdio.h>
@@ -41,12 +33,12 @@ using namespace std;
 
 #define m               0.001           // minimum step scale factor
 #define M               1.5              // maximum step scale factor
-#define numsam          500 //500000           // number of sample
+#define numsam          100000 //500000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
           
 //parameters of the vector of dt
-vector<double> dtlist = {0.01,0.03,0.05,0.07,0.09,0.1,0.2,0.3,0.4};
+// vector<double> dtlist = {0.01,0.03,0.05,0.07,0.09,0.1,0.2,0.3,0.4};
 // vector<double> dtlist = {0.5};
 // vector<double> dtlist = {0.5,0.2};
 
@@ -54,12 +46,22 @@ vector<double> dtlist = {0.01,0.03,0.05,0.07,0.09,0.1,0.2,0.3,0.4};
 /////////////////////////////////
 // Spring potential definition //
 /////////////////////////////////
+// // Spring potential 
+// //parameters of the potential 
+// #define a               1.0
+// #define b               1.0
+// #define x0              0.5
+// #define c               0.1
+
 // Spring potential 
 //parameters of the potential 
-#define a               1.0
-#define b               1.0
+#define a               3.0
+#define b               0.1
 #define x0              0.5
 #define c               0.1
+vector<double> dtlist = {0.002,0.006,0.018,0.05,0.13,0.36};
+
+
 
 long double Up(double x)
 {
@@ -242,15 +244,15 @@ int main(){
         copy(vec_tr.begin(), vec_tr.end(), out_itr);
         file.close();
 
-        // rescaled 
-        vector<double> vec_re=nt_steps_re(dti,ni);
-        //copy the value in a txt file
-        file << fixed << setprecision(16) << endl;
-        list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-        file_name=path+"/vec_re"+list_para+".txt";
-        file.open(file_name,ios_base::out);
-        copy(vec_re.begin(), vec_re.end(), out_itr);
-        file.close();
+        // // rescaled 
+        // vector<double> vec_re=nt_steps_re(dti,ni);
+        // //copy the value in a txt file
+        // file << fixed << setprecision(16) << endl;
+        // list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
+        // file_name=path+"/vec_re"+list_para+".txt";
+        // file.open(file_name,ios_base::out);
+        // copy(vec_re.begin(), vec_re.end(), out_itr);
+        // file.close();
     }
 
     // Subtract stop and start timepoints 
@@ -267,7 +269,7 @@ int main(){
     string parameters="Spring-M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-a="+to_string(a)+"-b="+to_string(b)+"-c="+to_string(c)+"-x0="+to_string(x0)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     fstream file;
     file << fixed << setprecision(16) << endl;
-    string information="data/parameters_used.txt";
+    string information=path+"/parameters_used.txt";
     file.open(information,ios_base::out);
     file << parameters;
     file <<"\n";

@@ -9,30 +9,31 @@ from settings_and_potential import *
 import pandas as pd
 
 # nrank = sys.argv[0]
-os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Weak SDE approximation/C++/eddie/accuracy")
+os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped")
+
 
 
 dta_noada = pd.DataFrame()
 dta_tr = pd.DataFrame()
-dta_re = pd.DataFrame()
+# dta_re = pd.DataFrame()
 
 for i in range(len(dtlist)):
     dti=dtlist[i]
-    file_i = "data_hard/vec_noadai="+str(i)+".txt"
+    file_i = "vec_noadai="+str(i)+".txt"
     x_noada=np.hstack(openCfile(file_i))
-    file_i = "data_hard/vec_tri="+str(i)+".txt"
+    file_i = "vec_tri="+str(i)+".txt"
     x_tr=np.hstack(openCfile(file_i))
-    file_i = "data_hard/vec_rei="+str(i)+".txt"
-    x_re=np.hstack(openCfile(file_i))
+    # file_i = "data_hard/vec_rei="+str(i)+".txt"
+    # x_re=np.hstack(openCfile(file_i))
 
     dta_noada["x"+str(i)] = x_noada
     dta_tr["x"+str(i)] = x_tr
-    dta_re["x"+str(i)] = x_re
+    # dta_re["x"+str(i)] = x_re
 
 
 weak_list_noada=[]
 weak_list_tr=[]
-weak_list_re=[]
+# weak_list_re=[]
 
 
 
@@ -49,8 +50,8 @@ for j in range(len(dtlist)):
     weak_list_noada.append(np.abs((np.sum(x)/len(x)-true_mom_1)/true_mom_1))
     x = dta_tr["x"+str(j)]
     weak_list_tr.append(np.abs((np.sum(x)/len(x)-true_mom_1)/true_mom_1))
-    x = dta_re["x"+str(j)]  
-    weak_list_re.append(np.abs((np.sum(x)/len(x)-true_mom_1)/true_mom_1))
+    # x = dta_re["x"+str(j)]  
+    # weak_list_re.append(np.abs((np.sum(x)/len(x)-true_mom_1)/true_mom_1))
 
 
     # ###########################################
@@ -62,10 +63,11 @@ ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color="red")
 ax1.plot(np.log(dtlist),np.log(weak_list_tr),"x",label="tr",color="green")
 x,y_x,a_round = get_slope(weak_list_tr,dtlist)
 ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color="green")
-ax1.plot(np.log(dtlist),np.log(weak_list_re),"x",label="re",color="blue")
-x,y_x,a_round = get_slope(weak_list_re,dtlist)
-ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color="blue")
+# ax1.plot(np.log(dtlist),np.log(weak_list_re),"x",label="re",color="blue")
+# x,y_x,a_round = get_slope(weak_list_re,dtlist)
+# ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color="blue")
 ax1.legend()
+os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/C++/overdamped/visualisation")
 fig.savefig('figures/accuracy.png')
 
 plt.show()
