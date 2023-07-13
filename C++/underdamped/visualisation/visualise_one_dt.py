@@ -22,7 +22,7 @@ plt.rc('ytick', labelsize=font_size)
 
 
 # nrank = sys.argv[0]
-os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Weak SDE approximation/C++/underdamped")
+os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped")
 
 
 # global T

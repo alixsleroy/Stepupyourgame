@@ -33,12 +33,12 @@ global dtlist
 # range_int=[-10,10]
 
 ## easier problem
-a=  5.0
+a=  3.0
 b=  0.1
 x0= 0.5
 c=  0.1
 tau=0.1
-dtlist = np.array([0.001,0.005,0.01,0.05,0.1,0.5])
+dtlist = np.array([0.002,0.006,0.018,0.05,0.13,0.36])
 
 
 

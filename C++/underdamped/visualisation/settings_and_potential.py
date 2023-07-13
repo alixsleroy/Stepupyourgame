@@ -12,52 +12,51 @@ global dtlist
 
 # Spring-M=1.500000-m=0.001000-Ns=100-a=10.000000-b=0.100000-c=0.100000-x0=0.500000
 
-# a=  1.0
-# b=  1
-# x0= 0.5
-# c=  0.1
-# tau=0.1
-# dtlist = np.array([0.01,0.03,0.05,0.07,0.09,0.1,0.2,0.3,0.4])
-
-a=  3.0
-b=  0.1
-x0= 0.5
+a=  0.1
+b=  1.0
+x0= 0.1
 c=  0.1
 tau=0.1
-dtlist = np.array([0.002,0.006,0.018,0.05,0.13,0.36])
-#dtlist = np.array([0.005,0.01,0.05,0.1,0.5])
-
+# dtlist = np.array([0.001,0.003,0.005,0.007,0.009,0.01,0.02])
 
 #######################################################
 ##### read file from c code
 #######################################################
-def openCfile(file):
-    """
-    Open the C txt file in order to obtain a matrix of results 
-    -----------
-    Input
-    -----------
-    file: txt file
-        a file containing the results from the C simulation
-
-    Return
-    -----------
-    mat: list of list
-        A matrix containing the results of the simulations 
-    """
+def openCfile_qp(file):
     with open(file) as f:
         cols = f.readlines() #columns in the txt file
     n_col = len(cols) #number of columns in the text file
-    mat=[] # matrix 
+    # when fill_p is 1, then fill in the matrix q
+    fill_p=0
+    fill_g=0
+    # vector of res
+    vals_q=[] #create an empty column i 
+    vals_p=[] #create an empty column i
+    vals_g=[] #create an empty column i  
     for i in range(n_col): # for each columns 
+        if cols[i]=='q\n':
+            fill_q=1
+            i+=1
+        if cols[i]=='p\n':
+            fill_p=1
+            fill_q=0
+            i+=1
+        if cols[i]=='g\n':
+            fill_g=1
+            fill_q=0
+            fill_p=0
+            i+=1
+        # clean up the cols 
         elems_i=cols[i].split(" ") #split the elements using " "
-        col_i=[] #create an empty column i 
         for elem in elems_i: #for each element of the list 
             if elem!="\n" and elem!=" ": #compare each elements and discard " " and "\n"
-                col_i.append(float(elem)) #append elems that are floats to the vector of interest
-        mat.append(col_i) #create the matrix
-    mat=np.array(mat)
-    return(mat) #return the value of the matrix.
+                if fill_q==1:
+                    vals_q.append(float(elem)) #append elems that are floats to the vector of interest
+                elif fill_p==1:
+                    vals_p.append(float(elem))
+                elif fill_g==1:
+                    vals_g.append(float(elem))
+    return np.array(vals_q),np.array(vals_p),np.array(vals_g)
 
 def U(x):
     res = (a**1.5*b**0.5*x0*np.arctan((a/b)**0.5*(x-x0))+(a*b*(a*x0*(x-x0)-b))/(a*(x-x0)**2+b)+c*(x-x0)**2+2*c*(x-x0)*x0)*0.5
