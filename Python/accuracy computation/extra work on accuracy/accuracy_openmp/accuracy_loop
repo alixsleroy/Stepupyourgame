@@ -1,0 +1,16 @@
+import numpy as np
+import pandas as pd
+import sys
+import os
+
+sys.path.append("Python/accuracy/")
+
+#to get the current working directory
+os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Weak SDE approximation/Python/accuracy/")
+
+
+
+dta=pd.read_pickle("accuracy_openmp/data/data")
+
+
+print(dta.head())

@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "../../.."
+		},
+		{
+			"path": "../../../../../../Documents/Teaching/Computer lab optimization"
+		},
+		{
+			"path": "../../../../../../Documents/PhD Year 2/Data science for dynamical system"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"iomanip": "cpp"
+		}
+	}
+}
