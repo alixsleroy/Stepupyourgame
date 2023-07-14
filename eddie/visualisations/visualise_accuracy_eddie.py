@@ -72,12 +72,19 @@ for j in range(len(dtlist)):
     # ###########################################
 fig, (ax1)= plt.subplots(1,1,figsize=(7,7))# plt.figure(figsize=(4,4))
 ax1.set_title("First moment")
+
 ax1.plot(np.log(dtlist),np.log(weak_list_noada),"x",label="Overdamped",color=myred)
-x,y_x,a_round = get_slope(weak_list_noada,dtlist)
+ax1.plot(np.log(dtlist),np.log(weak_list_noada),label="Overdamped",color=myred)
+
+x,y_x,a_round = get_slope(weak_list_noada[1:5],dtlist[1:5])
 ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color=myred)
+
 ax1.plot(np.log(dtlist),np.log(weak_list_tr),"x",label="Transformed",color=myblue)
-x,y_x,a_round = get_slope(weak_list_tr,dtlist)
+ax1.plot(np.log(dtlist),np.log(weak_list_tr),label="Transformed",color=myblue)
+
+x,y_x,a_round = get_slope(weak_list_tr[1:5],dtlist[1:5])
 ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color=myblue)
+
 # ax1.plot(np.log(dtlist),np.log(weak_list_re),"x",label="Naive rescaling",color=mygreen)
 # x,y_x,a_round = get_slope(weak_list_re,dtlist)
 # ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color=mygreen)

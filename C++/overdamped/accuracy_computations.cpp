@@ -33,10 +33,9 @@ using namespace std;
 
 #define m               0.001           // minimum step scale factor
 #define M               1.5              // maximum step scale factor
-#define numsam          100000 //500000           // number of sample
+#define numsam          500000 //500000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
-          
 //parameters of the vector of dt
 // vector<double> dtlist = {0.01,0.03,0.05,0.07,0.09,0.1,0.2,0.3,0.4};
 // vector<double> dtlist = {0.5};
@@ -55,11 +54,11 @@ using namespace std;
 
 // Spring potential 
 //parameters of the potential 
-#define a               3.0
+#define a               2.5
 #define b               0.1
 #define x0              0.5
 #define c               0.1
-vector<double> dtlist = {0.002,0.006,0.018,0.05,0.13,0.36};
+vector<double> dtlist = {0.002,0.004,0.006,0.011,0.018,0.03,0.05,0.08,0.13,0.22,0.36};
 
 
 
@@ -95,7 +94,7 @@ double getgprime(double x)
 /////////////////////////////
 // EM step - no adaptivity //
 /////////////////////////////
-vector<double> nt_steps_no_ada(double ds, double numruns)
+int nt_steps_no_ada(double ds, double numruns, int i)
 {
     // ******** Try Boost
     random_device rd1;
@@ -122,13 +121,26 @@ vector<double> nt_steps_no_ada(double ds, double numruns)
         // save the final value
         vec[ns]=y0;
     }
-return vec;
+
+// set up the path 
+string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped";
+
+fstream file;
+file << fixed << setprecision(16) << endl;
+string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
+string file_name=path+"/vec_noada"+list_para+".txt";
+file.open(file_name,ios_base::out);
+ostream_iterator<double> out_itr(file, "\n");
+copy(vec.begin(), vec.end(), out_itr);
+file.close();
+
+return 0;
 }
 
 ///////////////////////////
 // EM step - transformed //
 ///////////////////////////
-vector<double> nt_steps_tr(double ds, double numruns)
+int nt_steps_tr(double ds, double numruns, int i)
 {
     // ******** Try Boost
     random_device rd1;
@@ -136,7 +148,11 @@ vector<double> nt_steps_tr(double ds, double numruns)
     
 
     //extern int iseed;
+    // double printskip=int(numruns/snapshot);
     vector<double> vec(numsam,0);
+    vector<double> vec_g(numsam,0);
+
+    // vector<vector<double>> vec_g(snapshot,vec);
     double y1,gdt,gpdt,y0;
     int nt,ns;
     #pragma omp parallel private(y1,gdt,gpdt,nt,y0) shared(vec,ns)
@@ -152,13 +168,34 @@ vector<double> nt_steps_tr(double ds, double numruns)
             gpdt=getgprime(y0)*ds;
             y1 = y0-Up(y0)*gdt+gpdt*tau+sqrt(2*gdt*tau)*normal(generator);
             y0 = y1;
-           
         }
 
     // save the final value
     vec[ns]=y1;
+    vec_g[ns]=gdt/ds;
     }
-return vec;
+
+
+// set up the path 
+string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped";
+
+// copy the value in a txt file
+fstream file;
+file << fixed << setprecision(16) << endl;
+string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
+string file_name=path+"/vec_tr"+list_para+".txt";
+file.open(file_name,ios_base::out);
+ostream_iterator<double> out_itr(file, "\n");
+copy(vec.begin(), vec.end(), out_itr);
+file.close();
+
+file_name=path+"/vec_g"+list_para+".txt";
+file.open(file_name,ios_base::out);
+ostream_iterator<double> out_itr3(file, "\n");
+copy(vec_g.begin(), vec_g.end(), out_itr3);
+file.close();
+
+return 0;
 }
 
 
@@ -222,27 +259,13 @@ int main(){
 
 
         // no adaptivity 
-        vector<double> vec_noada=nt_steps_no_ada(dti,ni);
+        int vec_noada=nt_steps_no_ada(dti,ni,i);
         // copy the value in a txt file
-        fstream file;
-        file << fixed << setprecision(16) << endl;
-        string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-        string file_name=path+"/vec_noada"+list_para+".txt";
-        file.open(file_name,ios_base::out);
-        ostream_iterator<double> out_itr(file, "\n");
-        copy(vec_noada.begin(), vec_noada.end(), out_itr);
-        file.close();
+
 
 
         // transformed 
-        vector<double> vec_tr=nt_steps_tr(dti,ni);
-        // copy the value in a txt file
-        file << fixed << setprecision(16) << endl;
-        list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-        file_name=path+"/vec_tr"+list_para+".txt";
-        file.open(file_name,ios_base::out);
-        copy(vec_tr.begin(), vec_tr.end(), out_itr);
-        file.close();
+        int vec_tr=nt_steps_tr(dti,ni,i);
 
         // // rescaled 
         // vector<double> vec_re=nt_steps_re(dti,ni);

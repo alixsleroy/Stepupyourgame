@@ -68,6 +68,6 @@ ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color="green")
 # ax1.plot(x,y_x,"--",label="slope: "+str(a_round),color="blue")
 ax1.legend()
 os.chdir("/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/C++/overdamped/visualisation")
-fig.savefig('figures/accuracy.png')
+fig.savefig('figures/accuracy_a3.png')
 
 plt.show()
