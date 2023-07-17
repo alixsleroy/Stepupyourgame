@@ -56,12 +56,13 @@ using namespace std;
 // hard problem
 //////////////////////////////
 //would need 10^7 samples
-#define a               3.0
+#define a               2.5
 #define b               0.1
 #define x0              0.5
 #define c               0.1
 // vector<double> dtlist = {0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6};
-vector<double> dtlist = {0.009,0.02,0.04,0.06,0.08,0.1,0.2,0.4,0.6};
+// vector<double> dtlist = {0.009,0.02,0.04,0.06,0.08,0.1,0.2,0.4,0.6};
+vector<double> dtlist = {exp(-4.5),exp(-4.),exp(-3.5),exp(-3.),exp(-2.5),exp(-2.),exp(-1.5),exp(-1.),exp(-.5)};
 
 
 // // Somewhat in between problem 
