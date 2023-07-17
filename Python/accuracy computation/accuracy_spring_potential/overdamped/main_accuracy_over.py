@@ -14,12 +14,6 @@ path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame
 ## path for figures 
 path_figures="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/Python/accuracy computation/accuracy_spring_potential/visualisation/figures/"
 
-## Import the package to run the samples 
-sys.path.append("Python/accuracy computation/accuracy_spring_potential")
-from settings import *
-from useful_tools import *
-from accuracy_over_func import *
-
 ## Set global variables 
 global T
 global gamma
@@ -27,6 +21,12 @@ global tau
 global h
 global n_samples
 global Nt
+
+## Import the package and the values of the global var to run the samples 
+sys.path.append("Python/accuracy computation/accuracy_spring_potential")
+from settings import *
+from useful_tools import *
+from accuracy_over_func import *
 
 #######################################################
 ##### Plot presentations (colors)
@@ -73,42 +73,42 @@ test=0
 ##############################
 ## easier problem 
 #####################
-## with parameters
-# m=0.001
-# M=1.5
-# pot="spring"
-# a=1
-# b=1
-# x0=0.5
-# c=0.1
-# dt_list= [0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6]
-# T=100
-# tau=0.1
-# n_samples=5000123
-# x=0
-# range_bins=[-10,10] # range to plot samples on histograms
-# nbins=50
-# range_int=[-10,10] # integration range
-
-## very hard problem 
-#####################
-## with parameters
+# with parameters
 m=0.001
 M=1.5
 pot="spring"
-a=10
-b=0.1
+a=1
+b=1
 x0=0.5
 c=0.1
 dt_list= [0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6]
-#dt_list= [0.0007,0.0009,0.001,0.003,0.005,0.007,0.009,0.01,0.03,0.05,0.07,0.09,0.1,0.3,0.5]
-T=100 
+T=100
 tau=0.1
-n_samples=10000000
+n_samples=5000123
 x=0
-range_bins=[-1,1] # range to plot samples on histograms
+range_bins=[-10,10] # range to plot samples on histograms
 nbins=50
-range_int=[-10,10] # integration range 
+range_int=[-10,10] # integration range
+
+## very hard problem 
+#####################
+# ## with parameters
+# m=0.001
+# M=1.5
+# pot="spring"
+# a=10
+# b=0.1
+# x0=0.5
+# c=0.1
+# dt_list= [0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6]
+# #dt_list= [0.0007,0.0009,0.001,0.003,0.005,0.007,0.009,0.01,0.03,0.05,0.07,0.09,0.1,0.3,0.5]
+# T=100 
+# tau=0.1
+# n_samples=10000000
+# x=0
+# range_bins=[-1,1] # range to plot samples on histograms
+# nbins=50
+# range_int=[-10,10] # integration range 
 
 #####################################################
 ## Verify that this is the distributions of squar pot

@@ -33,7 +33,7 @@ using namespace std;
 
 #define m               0.001           // minimum step scale factor
 #define M               1.5              // maximum step scale factor
-#define numsam          500000 //500000           // number of sample
+#define numsam          1000000 //500000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
 //parameters of the vector of dt
@@ -43,22 +43,38 @@ using namespace std;
 
 
 /////////////////////////////////
-// Spring potential definition //
+// Spring potential results //
 /////////////////////////////////
-// // Spring potential 
-// //parameters of the potential 
+//easier problem
+/////////////////////////////
 // #define a               1.0
 // #define b               1.0
 // #define x0              0.5
 // #define c               0.1
+// vector<double> dtlist = {0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6};
 
-// Spring potential 
-//parameters of the potential 
-#define a               2.5
+// hard problem
+//////////////////////////////
+//would need 10^7 samples
+#define a               3.0
 #define b               0.1
 #define x0              0.5
 #define c               0.1
-vector<double> dtlist = {0.002,0.004,0.006,0.011,0.018,0.03,0.05,0.08,0.13,0.22,0.36};
+// vector<double> dtlist = {0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6};
+vector<double> dtlist = {0.009,0.02,0.04,0.06,0.08,0.1,0.2,0.4,0.6};
+
+
+// // Somewhat in between problem 
+// //////////////////////////////
+// #define a               2.5
+// #define b               0.1
+// #define x0              0.5
+// #define c               0.1
+// // vector<double> dtlist = {0.002,0.004,0.006,0.011,0.018,0.03,0.05,0.08,0.13,0.22,0.36};
+// vector<double> dtlist = {0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6};
+
+// #define path "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped"
+// #define parameters 'tau='+to_string(tau)+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(Nt)+"-ns="+to_string(n_samples)+"-h="+str(h)
 
 
 
@@ -124,7 +140,6 @@ int nt_steps_no_ada(double ds, double numruns, int i)
 
 // set up the path 
 string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped";
-
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
