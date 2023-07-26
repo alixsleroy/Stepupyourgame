@@ -45,9 +45,7 @@ using namespace std;
 #define tau             0.1  
           
 //parameters of the vector of dt
-vector<double> dtlist = {0.0005,0.001,0.005,0.01,0.05,0.1,0.5};
-// vector<double> dtlist = {0.5};
-// vector<double> dtlist = {0.5,0.2};
+vector<double> dtlist = {exp(-5),exp(-4.5),exp(-4.),exp(-3.5),exp(-3.),exp(-2.5),exp(-2.),exp(-1.5),exp(-1.),exp(-.5)};
 
 
 /////////////////////////////////
@@ -55,7 +53,7 @@ vector<double> dtlist = {0.0005,0.001,0.005,0.01,0.05,0.1,0.5};
 /////////////////////////////////
 // Spring potential 
 //parameters of the potential 
-#define a               10.0
+#define a               2.5
 #define b               0.1
 #define x0              0.5
 #define c               0.1
@@ -123,7 +121,7 @@ int nt_steps_no_ada(double ds, double numruns,int i)
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-string file_name="data_hard/vec_noada"+list_para+".txt";
+string file_name="data_a25/vec_noada"+list_para+".txt";
 file.open(file_name,ios_base::out);
 ostream_iterator<double> out_itr(file, "\n");
 copy(vec.begin(), vec.end(), out_itr);
@@ -168,7 +166,7 @@ int nt_steps_tr(double ds, double numruns, int i)
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-string file_name="data_hard/vec_tr"+list_para+".txt";
+string file_name="data_a25/vec_tr"+list_para+".txt";
 file.open(file_name,ios_base::out);
 ostream_iterator<double> out_itr(file, "\n");
 copy(vec.begin(), vec.end(), out_itr);
@@ -213,7 +211,7 @@ int nt_steps_re(double ds, double numruns, int i)
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-string file_name="data_hard/vec_re"+list_para+".txt";
+string file_name="data_a25/vec_re"+list_para+".txt";
 file.open(file_name,ios_base::out);
 ostream_iterator<double> out_itr(file, "\n");
 copy(vec.begin(), vec.end(), out_itr);
@@ -261,7 +259,7 @@ int main(){
     string parameters="Spring-M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-a="+to_string(a)+"-b="+to_string(b)+"-c="+to_string(c)+"-x0="+to_string(x0)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     fstream file;
     file << fixed << setprecision(16) << endl;
-    string information="data_hard/parameters_used.txt";
+    string information="data_a25/parameters_used.txt";
     file.open(information,ios_base::out);
     file << parameters;
     file <<"\n";

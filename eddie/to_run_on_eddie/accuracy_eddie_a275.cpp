@@ -8,8 +8,7 @@
 //  This is the working code to compute samples from underdamped using splitting scheme 
 //  Baoab. This code implements Euler-Maruyama for the transformed SDE. 
 //  
-# include <math.h>
-#include <filesystem>
+#include <math.h>
 #include <cstring>
 #include <stdio.h>
 #include <random>
@@ -33,7 +32,7 @@ using namespace std;
 
 #define m               0.001           // minimum step scale factor
 #define M               1.5              // maximum step scale factor
-#define numsam          100000000 //500000           // number of sample
+#define numsam          10 //500000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
 //parameters of the vector of dt
@@ -141,11 +140,10 @@ int nt_steps_no_ada(double ds, double numruns, int i)
     }
 
 // set up the path 
-string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped";
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-string file_name=path+"/vec_noada"+list_para+".txt";
+string file_name="data_a275/vec_noada"+list_para+".txt";
 file.open(file_name,ios_base::out);
 ostream_iterator<double> out_itr(file, "\n");
 copy(vec.begin(), vec.end(), out_itr);
@@ -193,21 +191,17 @@ int nt_steps_tr(double ds, double numruns, int i)
     vec_g[ns]=gdt/ds;
     }
 
-
-// set up the path 
-string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped";
-
 // copy the value in a txt file
 fstream file;
 file << fixed << setprecision(16) << endl;
-string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-string file_name=path+"/vec_tr"+list_para+".txt";
+string list_para="i="+to_string(i); 
+string file_name="data_a275/vec_tr"+list_para+".txt";
 file.open(file_name,ios_base::out);
 ostream_iterator<double> out_itr(file, "\n");
 copy(vec.begin(), vec.end(), out_itr);
 file.close();
 
-file_name=path+"/vec_g"+list_para+".txt";
+file_name="data_a275/vec_g"+list_para+".txt";
 file.open(file_name,ios_base::out);
 ostream_iterator<double> out_itr3(file, "\n");
 copy(vec_g.begin(), vec_g.end(), out_itr3);
@@ -259,8 +253,6 @@ return vec;
 
 int main(){
 
-    // set up the path 
-    string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped";
 
     // Compute how much time it takes
     auto start = high_resolution_clock::now();
@@ -310,7 +302,7 @@ int main(){
     string parameters="Spring-M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-a="+to_string(a)+"-b="+to_string(b)+"-c="+to_string(c)+"-x0="+to_string(x0)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     fstream file;
     file << fixed << setprecision(16) << endl;
-    string information=path+"/parameters_used.txt";
+    string information="data_a275/parameters_used.txt";
     file.open(information,ios_base::out);
     file << parameters;
     file <<"\n";
