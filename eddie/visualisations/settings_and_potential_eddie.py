@@ -13,13 +13,13 @@ global dtlist
 # Spring-M=1.500000-m=0.001000-Ns=100-a=10.000000-b=0.100000-c=0.100000-x0=0.500000
 
 # ## hard problem
-a=  10.0
+a=  2.5
 b=  0.1
 x0= 0.5
 c=  0.1
 tau=0.1
-dtlist = np.array([0.002,0.006,0.018,0.05,0.13,0.36])
 
+dtlist = np.array([np.exp(-4.5),np.exp(-4.21),np.exp(-3.93),np.exp(-3.64),np.exp(-3.36),np.exp(-3.07),np.exp(-2.79),np.exp(-2.5),np.exp(-2.21),np.exp(-1.93),np.exp(-1.64),np.exp(-1.36),np.exp(-1.07),np.exp(-0.79),np.exp(-0.5)])
 
 
 # ## easy problem on eddie 

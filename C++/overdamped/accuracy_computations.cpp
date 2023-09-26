@@ -33,7 +33,7 @@ using namespace std;
 
 #define m               0.001           // minimum step scale factor
 #define M               1.5              // maximum step scale factor
-#define numsam          100000000 //500000           // number of sample
+#define numsam          500000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
 //parameters of the vector of dt
@@ -87,10 +87,38 @@ long double Up(double x)
     return (wx*wx+c)*x;
 }
 
+/////////////////////////////////////
+// g depends on w(x) 
+/////////////////////////////////////
+// double getg(double x)
+// {
+//     double wx,f,xi,g;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     xi = f+m;
+//     g = 1/(1/M+1/sqrt(xi));
+//     return(g);
+
+// }
+
+// double getgprime(double x)
+// {
+//     double wx,f,fp,xi,gprime;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
+//     xi=sqrt(f+m*m);
+//     gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
+//     return(gprime);
+// }
+
+/////////////////////////////////////
+// g depends on w'(x) 
+/////////////////////////////////////
 double getg(double x)
 {
     double wx,f,xi,g;
-    wx =(b/a+pow(x-x0,2))/b;
+    wx =x-x0;
     f = wx*wx;
     xi = f+m;
     g = 1/(1/M+1/sqrt(xi));
@@ -101,13 +129,15 @@ double getg(double x)
 double getgprime(double x)
 {
     double wx,f,fp,xi,gprime;
-    wx =(b/a+pow(x-x0,2))/b;
+    wx =x-x0;
     f = wx*wx;
-    fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
+    fp = 1;
     xi=sqrt(f+m*m);
-    gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
+    gprime= M*M*fp*f/(xi*(xi+M)*(xi+M));
     return(gprime);
 }
+
+
 
 /////////////////////////////
 // EM step - no adaptivity //

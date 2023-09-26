@@ -61,7 +61,7 @@ double C;
 p += 0.5*h*f;
 q += 0.5*h*pnew;
 C = exp(-h*gamma);
-p = C*p + sqrt((1-C*C)*tau)*r8_normal_01();
+p = C*p + sqrt((1.-C*C)*tau)*r8_normal_01();
 q += 0.5*h*p;
 f = -Up(q);
 p += 0.5*h*f;

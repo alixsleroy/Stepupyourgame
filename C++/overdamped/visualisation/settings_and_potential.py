@@ -29,6 +29,7 @@ tau=0.1
 # dtlist = np.array([0.009,0.02,0.04,0.06,0.08,0.1,0.2,0.4,0.6])
 dtlist = np.array([np.exp(-4.5),np.exp(-4.),np.exp(-3.5),np.exp(-3.),np.exp(-2.5),np.exp(-2.),np.exp(-1.5),np.exp(-1.),np.exp(-.5)])
 
+dtlist = np.array([np.exp(-4.5), np.exp(-4.21), np.exp(-3.93), np.exp(-3.64), np.exp(-3.36), np.exp(-3.07), np.exp(-2.79), np.exp(-2.5) , np.exp(-2.21), np.exp(-1.93), np.exp(-1.64), np.exp(-1.36), np.exp(-1.07), np.exp(-0.79), np.exp(-0.5)])
 
 #######################################################
 ##### read file from c code

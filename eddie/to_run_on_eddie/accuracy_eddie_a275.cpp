@@ -32,14 +32,10 @@ using namespace std;
 
 #define m               0.001           // minimum step scale factor
 #define M               1.5              // maximum step scale factor
-#define numsam          10 //500000           // number of sample
+#define numsam          1000000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
-//parameters of the vector of dt
-// vector<double> dtlist = {0.01,0.03,0.05,0.07,0.09,0.1,0.2,0.3,0.4};
-// vector<double> dtlist = {0.5};
-// vector<double> dtlist = {0.5,0.2};
-
+#define printskip       100
 
 /////////////////////////////////
 // Spring potential results //
@@ -111,7 +107,7 @@ double getgprime(double x)
 /////////////////////////////
 // EM step - no adaptivity //
 /////////////////////////////
-int nt_steps_no_ada(double ds, double numruns, int i)
+vector<double> nt_steps_no_ada(double ds, double numruns, int i)
 {
     // ******** Try Boost
     random_device rd1;
@@ -119,10 +115,13 @@ int nt_steps_no_ada(double ds, double numruns, int i)
     
 
     //extern int iseed;
-    vector<double> vec(numsam,0);
+    vector<double> vec((numsam/printskip),0);
+    vector<double> moments(4,0);
+
     double y0,y1;
-    int nt,ns;
-    #pragma omp parallel private(nt,y0,y1) shared(vec,ns)
+    int nt,ns,nsp;
+    nsp=0;
+    #pragma omp parallel private(nt,y0,y1) shared(vec,ns,moments,nsp)
     #pragma omp for
     for(int ns = 0; ns <= numsam; ns++){ // run the loop for ns samples
 
@@ -135,9 +134,28 @@ int nt_steps_no_ada(double ds, double numruns, int i)
             y1=y0-Up(y0) * ds + sqrt(ds * tau * 2) * normal(generator);
             y0=y1;
         }
-        // save the final value
-        vec[ns]=y0;
+        // save the values every printskip
+        if(ns%printskip==0){
+            vec[nsp]=y1;
+            nsp+=1;
+
+        }
+    
+
+        // compute the moments
+        moments[0]+=y1;
+        moments[1]+=y1*y1;
+        moments[2]+=y1*y1*y1;
+        moments[3]+=y1*y1*y1*y1;
+
     }
+
+// rescale the moments 
+moments[0]=moments[0]/numsam;
+moments[1]=moments[1]/numsam;
+moments[2]=moments[2]/numsam;
+moments[3]=moments[3]/numsam;
+
 
 // set up the path 
 fstream file;
@@ -149,28 +167,30 @@ ostream_iterator<double> out_itr(file, "\n");
 copy(vec.begin(), vec.end(), out_itr);
 file.close();
 
-return 0;
+return moments;
 }
 
 ///////////////////////////
 // EM step - transformed //
 ///////////////////////////
-int nt_steps_tr(double ds, double numruns, int i)
+vector<double> nt_steps_tr(double ds, double numruns, int i)
 {
     // ******** Try Boost
     random_device rd1;
     boost::random::mt19937 gen(rd1());
     
 
-    //extern int iseed;
-    // double printskip=int(numruns/snapshot);
-    vector<double> vec(numsam,0);
-    vector<double> vec_g(numsam,0);
+    // create vectors
+    vector<double> vec((numsam/printskip),0);
+    vector<double> vec_g((numsam/printskip),0);
+    vector<double> moments(4,0);
+
 
     // vector<vector<double>> vec_g(snapshot,vec);
     double y1,gdt,gpdt,y0;
-    int nt,ns;
-    #pragma omp parallel private(y1,gdt,gpdt,nt,y0) shared(vec,ns)
+    int nt,ns,nsp;
+    nsp=0;
+    #pragma omp parallel private(y1,gdt,gpdt,nt,y0) shared(vec,ns,moments,nsp)
     #pragma omp for
     for(ns = 0; ns <= numsam; ns++){ // run the loop for ns samples
 
@@ -186,10 +206,27 @@ int nt_steps_tr(double ds, double numruns, int i)
             y0 = y1;
         }
 
-    // save the final value
-    vec[ns]=y1;
-    vec_g[ns]=gdt/ds;
+    // save the values every printskip
+    if(ns%printskip==0){
+        vec[nsp]=y1;
+        vec_g[nsp]=gdt/ds;
+        nsp+=1;
     }
+ 
+
+    // compute the moments
+    moments[0]+=y1;
+    moments[1]+=y1*y1;
+    moments[2]+=y1*y1*y1;
+    moments[3]+=y1*y1*y1*y1;
+
+    }
+
+// rescale the moments 
+moments[0]=moments[0]/numsam;
+moments[1]=moments[1]/numsam;
+moments[2]=moments[2]/numsam;
+moments[3]=moments[3]/numsam;
 
 // copy the value in a txt file
 fstream file;
@@ -207,44 +244,7 @@ ostream_iterator<double> out_itr3(file, "\n");
 copy(vec_g.begin(), vec_g.end(), out_itr3);
 file.close();
 
-return 0;
-}
-
-
-/////////////////////////
-// EM step - rescaled ///
-////////////////////////
-
-vector<double> nt_steps_re(double ds, double numruns)
-{
-    // ******** Try Boost
-    random_device rd1;
-    boost::random::mt19937 gen(rd1());
-    
-
-    //extern int iseed;
-    vector<double> vec(numsam,0);
-    double y1,gdt,gp,y0;
-    int nt,ns;
-    #pragma omp parallel private(y1,gdt,nt,y0) shared(vec,ns)
-    #pragma omp for
-    for(ns = 0; ns <= numsam; ns++){ // run the loop for ns samples
-
-        mt19937 generator(rd1());
-        normal_distribution<double> normal(0, 1);
-        y0=0;
-        for(nt = 0; nt<numruns; nt++) // run until time T (ie for Nt steps)
-        {  
-           
-            gdt= getg(y0)*ds;
-            y1 = y0-Up(y0)*gdt+sqrt(2*gdt*tau)*normal(generator);
-            y0 = y1;
-        }
-
-    // save the final value
-    vec[ns]=y1;
-    }
-return vec;
+return moments;
 }
 
 ///////////////////////////
@@ -257,57 +257,100 @@ int main(){
     // Compute how much time it takes
     auto start = high_resolution_clock::now();
     using namespace std;
+    vector<double> moments_1(dtlist.size(),0);
+    vector<double> moments_2(dtlist.size(),0);
+    vector<double> moments_3(dtlist.size(),0);
+    vector<double> moments_4(dtlist.size(),0);
+
+    vector<double> moments_tr_1(dtlist.size(),0);
+    vector<double> moments_tr_2(dtlist.size(),0);
+    vector<double> moments_tr_3(dtlist.size(),0);
+    vector<double> moments_tr_4(dtlist.size(),0);
+
 
     for(int i = 0; i < dtlist.size(); i++){ // run the loop for ns samples
-        // cout<<"i=\n";
-        // cout<<i;
-        // cout<<"ni = \n";
+
         double dti = dtlist[i];
         double ni = T/dti;
-        // cout<<ni;
-        // cout<<"\n";
-
 
         // no adaptivity 
-        int vec_noada=nt_steps_no_ada(dti,ni,i);
-        // copy the value in a txt file
-
+        vector<double> moments_di=nt_steps_no_ada(dti,ni,i);
+        moments_1[i]=moments_di[0];
+        moments_2[i]=moments_di[1];
+        moments_3[i]=moments_di[2];
+        moments_4[i]=moments_di[3];
 
 
         // transformed 
-        int vec_tr=nt_steps_tr(dti,ni,i);
-
-        // // rescaled 
-        // vector<double> vec_re=nt_steps_re(dti,ni);
-        // //copy the value in a txt file
-        // file << fixed << setprecision(16) << endl;
-        // list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-        // file_name=path+"/vec_re"+list_para+".txt";
-        // file.open(file_name,ios_base::out);
-        // copy(vec_re.begin(), vec_re.end(), out_itr);
-        // file.close();
+        moments_di=nt_steps_tr(dti,ni,i);
+        moments_tr_1[i]=moments_di[0];
+        moments_tr_2[i]=moments_di[1];
+        moments_tr_3[i]=moments_di[2];
+        moments_tr_4[i]=moments_di[3];
+ 
     }
 
-    // Subtract stop and start timepoints 
+    // * SAVE THE COMPUTED MOMENTS IN A FILE
+    /////////////////////////////////////////
+    // NON ADAPTIVE
+    fstream file;
+    file << fixed << setprecision(16) << endl;
+    string file_name="data_a275/noada_moment1.txt";
+    file.open(file_name,ios_base::out);
+    ostream_iterator<double> out_itr(file, "\n");
+    copy(moments_1.begin(), moments_1.end(), out_itr);
+    file.close();
+
+    file_name="data_a275/noada_moment2.txt";
+    file.open(file_name,ios_base::out);
+    copy(moments_2.begin(), moments_2.end(), out_itr);
+    file.close();
+
+    file_name="data_a275/noada_moment3.txt";
+    file.open(file_name,ios_base::out);
+    copy(moments_3.begin(), moments_3.end(), out_itr);
+    file.close();
+
+    file_name="data_a275/noada_moment4.txt";
+    file.open(file_name,ios_base::out);
+    copy(moments_4.begin(), moments_4.end(), out_itr);
+    file.close();
+
+    // TRANSFORMED
+    file_name="data_a275/tr_moment1.txt";
+    file.open(file_name,ios_base::out);
+    copy(moments_tr_1.begin(), moments_tr_1.end(), out_itr);
+    file.close();
+
+    file_name="data_a275/tr_moment2.txt";
+    file.open(file_name,ios_base::out);
+    copy(moments_tr_2.begin(), moments_tr_2.end(), out_itr);
+    file.close();
+
+    file_name="data_a275/tr_moment3.txt";
+    file.open(file_name,ios_base::out);
+    copy(moments_tr_3.begin(), moments_tr_3.end(), out_itr);
+    file.close();
+
+    file_name="data_a275/tr_moment4.txt";
+    file.open(file_name,ios_base::out);
+    copy(moments_tr_4.begin(), moments_tr_4.end(), out_itr);
+    file.close();
+
+    // * SAVE THE TIME AND PARAMETERS OF THE SIMULATION IN A INFO FILE
+    ///////////////////////////////////////////////////////////////////
+    // find time by subtracting stop and start timepoints 
     auto stop = high_resolution_clock::now();
     auto duration_m = duration_cast<minutes>(stop - start);
     auto duration_s = duration_cast<seconds>(stop - start);
     auto duration_ms = duration_cast<microseconds>(stop - start);
-
-    // To get the value of duration use the count()
-    // member function on the duration object
-    // cout << chrono::duration_cast<chrono::seconds>(end - start).count();
-
     // save the parameters in a file info
     string parameters="Spring-M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-a="+to_string(a)+"-b="+to_string(b)+"-c="+to_string(c)+"-x0="+to_string(x0)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
-    fstream file;
-    file << fixed << setprecision(16) << endl;
     string information="data_a275/parameters_used.txt";
     file.open(information,ios_base::out);
     file << parameters;
     file <<"\n";
     file <<"list of dt";
-    ostream_iterator<double> out_itr(file, "\n");
     copy(dtlist.begin(), dtlist.end(), out_itr);
     file.close();
 
