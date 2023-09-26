@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as cl
-
+from settings import *
+from pot_definition import *
 plt.rc('xtick', labelsize=13) 
 plt.rc('ytick', labelsize=13) 
 
@@ -11,9 +12,10 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("Python/accuracy/accuracy_1dim")
 
-from settings import *
-from pot_definition import *
 
+
+
+###################
 
 ### Plot parameters: 
 font_size = 15
@@ -105,7 +107,7 @@ def plot_one_distr_over(df_noada,df_tr,df_re,tau,range_bins,h,T):
 pot="spring"
 
 
-if True==False:
+if True==True:
     h=0.001
     T=50
     Nt=int(T*1/h)+1
@@ -116,9 +118,9 @@ if True==False:
     range_bins=[-4,2]
     ## Parameters 
     list_param = str(pot)+'-tau='+str(tau)+'-M='+str(M)+'m='+str(m)+"-Nt="+str(Nt)+"-ns="+str(n_samples)
-    df_noada=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_noada_"+list_param)
-    df_tr=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_tr_"+list_param)
-    df_re=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_re_"+list_param)
+    df_noada=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_noada_"+list_param)
+    df_tr=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_tr_"+list_param)
+    df_re=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_re_"+list_param)
 
     ## Set up the plots 
 
@@ -170,7 +172,7 @@ if True==False:
 ####################### PLOT PART 3 TRANSFORMED ########################################
 ###########################################################################################
 
-if True==True:
+if True==False:
     # line_w=5
 
     nbins=150

@@ -30,7 +30,7 @@ def one_traj_noada(qp,Nt,dt,gamma,tau):
         #**********
         dB = np.random.normal(0,1)
         C =np.exp(-dt*gamma) 
-        p = C*p+ np.sqrt((1-C*C)*tau)*dB
+        p = C*p+ np.sqrt((1.-C*C)*tau)*dB
 
         #**********
         #* STEP A *

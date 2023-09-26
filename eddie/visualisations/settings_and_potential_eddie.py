@@ -23,16 +23,16 @@ dtlist = np.array([np.exp(-4.5),np.exp(-4.21),np.exp(-3.93),np.exp(-3.64),np.exp
 
 
 # ## easy problem on eddie 
-# pot="spring"
-# a=  1.0
-# b=  1.0
-# x0= 0.5
-# c=  0.1
-# tau=0.1
-# dtlist = np.array([0.01,0.03,0.05,0.07,0.09,0.1,0.2,0.3,0.4])
+pot="spring"
+a=  1.0
+b=  1.0
+x0= 0.5
+c=  0.1
+tau=0.1
+# # dtlist = np.array([0.01,0.03,0.05,0.07,0.09,0.1,0.2,0.3,0.4])
 # range_int=[-10,10]
 
-## easier problem
+# # easier problem
 # a=  1.0
 # b=  0.1
 # x0= 0.5

@@ -30,79 +30,75 @@ using namespace std::chrono;
  
 using namespace std;
 
-#define m               0.001           // minimum step scale factor
-#define M               1.5              // maximum step scale factor
-#define numsam          10 //1000000           // number of sample
-#define T               100       // final time of all simulations 
+
+#define m1              .5           // minimum step scale factor
+#define M1              1./2.   
+#define m               0.9           // minimum step scale factor
+#define M               1.2              // maximum step scale factor
+#define numsam          500           // number of sample
+#define T               500       // final time of all simulations 
 #define tau             0.1  
-#define printskip       1 //00
+#define printskip       1
 
-/////////////////////////////////
-// Spring potential results //
-/////////////////////////////////
-//easier problem
-/////////////////////////////
-#define a               1.0
-#define b               1.0
-#define x0              0.5
-#define c               0.1
-// vector<double> dtlist = {0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6};
+//////////////////
+// Anisotropic  //
+////////////////// 
+vector<double> dtlist = {exp(-5.3), exp(-5.), exp(-4.79), exp(-4.53), exp(-4.27), exp(-4.02), exp(-3.76), exp(-3.51), exp(-3.25), exp(-3.)};
+#define s 10. // parameter of how steep the double well is 
+#define c .5 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
 
-// hard problem
-//////////////////////////////
-//would need 10^7 samples
-// #define a               2.75
-// #define b               0.1
-// #define x0              0.5
-// #define c               0.1
-// vector<double> dtlist = {0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6};
-// vector<double> dtlist = {0.009,0.02,0.04,0.06,0.08,0.1,0.2,0.4,0.6};
-//vector<double> dtlist = {exp(-4.5),exp(-4.),exp(-3.5),exp(-3.),exp(-2.5),exp(-2.),exp(-1.5),exp(-1.),exp(-.5)};
-// vector<double> dtlist = {exp(-4.5) , exp(-4.14), exp(-3.77),exp(-3.41), exp(-3.05), exp(-2.68), exp(-2.32), exp(-1.95), exp(-1.59),exp(-1.23), exp(-0.86), exp(-0.5)};
-vector<double> dtlist = {exp(-4.5) , exp(-4.21), exp(-3.93), exp(-3.64), exp(-3.36), exp(-3.07), exp(-2.79), exp(-2.5) , exp(-2.21),exp(-1.93), exp(-1.64), exp(-1.36), exp(-1.07), exp(-0.79), exp(-0.5)};
-
-// // Somewhat in between problem 
-// //////////////////////////////
-// #define a               2.5
-// #define b               0.1
-// #define x0              0.5
-// #define c               0.1
-// // vector<double> dtlist = {0.002,0.004,0.006,0.011,0.018,0.03,0.05,0.08,0.13,0.22,0.36};
-// vector<double> dtlist = {0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6};
-
-// #define path "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped"
-// #define parameters 'tau='+to_string(tau)+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(Nt)+"-ns="+to_string(n_samples)+"-h="+str(h)
-
-
-
-long double Up(double x)
+double U(double x, double y)
 {
-   long double xx02= (x-x0)*(x-x0);
-   long double wx =b/(b/a+xx02);
-    return (wx*wx+c)*x;
+    double res=s*(x*x+y*y-1)*(x*x+y*y-1);
+    return res;
 }
 
-double getg(double x)
+double Upx(double x,double y)
 {
-    double wx,f,xi,g;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    xi = f+m;
-    g = 1/(1/M+1/sqrt(xi));
+    double res=4*x*s*(x*x+y*y-1);
+    return res;
+}
+
+double Upy(double x,double y)
+{
+    double res=4*y*s*(x*x+y*y-1);
+    return res;
+}
+
+double getg(double x, double y)
+{
+    double xc,xa,f,f2,xi,den,g;
+    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y));
+    f2=f*f;
+    xi=sqrt(1+m1*f2);
+    den=M1*xi+f;
+    g=xi/den;
     return(g);
-
 }
 
-double getgprime(double x)
+
+double getgprime_x(double x,double y)
 {
-    double wx,f,fp,xi,gprime;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
-    xi=sqrt(f+m*m);
-    gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
-    return(gprime);
-}
+    double xc,xa,f,f2,xi,fp,gp;
+    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y));
+    f2=f*f;
+    fp=c*s*4*(x*x+y*y-1)*x;
+    xi=sqrt(1+m1*f2);
+    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    return(gp);
+    }
+
+double getgprime_y(double x,double y)
+{
+    double xc,xa,f,f2,xi,fp,gp;
+    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1));
+    f2=f*f;
+    fp=c*s*4*(x*x+y*y-1)*y;
+    xi=sqrt(1+m1*f2);
+    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    return(gp);
+    }
+
 
 /////////////////////////////
 // EM step - no adaptivity //
@@ -115,38 +111,45 @@ vector<double> nt_steps_no_ada(double ds, double numruns, int i)
     
 
     //extern int iseed;
-    vector<double> vec((numsam/printskip),0);
+    vector<double> vec_x((numsam/printskip),0);
+    vector<double> vec_y((numsam/printskip),0);
     vector<double> moments(4,0);
 
-    double y0,y1;
+    double y0,y1,x0,x1;
     int nt,ns,nsp;
     nsp=0;
-    #pragma omp parallel private(nt,y0,y1) shared(vec,ns,moments,nsp)
+    #pragma omp parallel private(nt,y0,x0,x1,y1) shared(vec_x,vec_y,ns,moments,nsp)
     #pragma omp for
-    for(int ns = 0; ns <= numsam; ns++){ // run the loop for ns samples
 
+    for(int ns = 0; ns <= numsam; ns++){ // run the loop for ns samples
         mt19937 generator(rd1());
         normal_distribution<double> normal(0, 1);
-        y0=0;
-        // cout<<"\n \n New sim \n\n";
+        y0=1.;
+        x0=1.;
         for(int nt = 0; nt<numruns; nt++) // run until time T (ie for Nt steps)
         {  
-            y1=y0-Up(y0) * ds + sqrt(ds * tau * 2) * normal(generator);
+            x1=x0-Upx(x0,y0) * ds + sqrt(ds * tau * 2) * normal(generator);
+            y1=y0-Upy(x0,y0) * ds + sqrt(ds * tau * 2) * normal(generator);
+            x0=x1;
             y0=y1;
+
         }
+
         // save the values every printskip
         if(ns%printskip==0){
-            vec[nsp]=y1;
+            vec_x[nsp]=x1;
+            vec_y[nsp]=y1;
             nsp+=1;
 
         }
     
 
         // compute the moments
-        moments[0]+=y1;
-        moments[1]+=y1*y1;
-        moments[2]+=y1*y1*y1;
-        moments[3]+=y1*y1*y1*y1;
+        moments[0]+=x1;
+        moments[1]+=y1;
+        moments[2]+=x1*y1;
+        moments[3]+=U(x1,y1);
+
 
     }
 
@@ -157,15 +160,22 @@ moments[2]=moments[2]/numsam;
 moments[3]=moments[3]/numsam;
 
 
-// set up the path 
+// set up the path
+string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_2d";
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); //+'-M='+to_string(M)+'m='+to_string(m)+"-Nt="+to_string(numruns)+"-Ns="+to_string(numsam);
-string file_name="data_easy/vec_noada"+list_para+".txt";
+string file_name=path+"/vec_noada_x"+list_para+".txt";
 file.open(file_name,ios_base::out);
 ostream_iterator<double> out_itr(file, "\n");
-copy(vec.begin(), vec.end(), out_itr);
+copy(vec_x.begin(), vec_x.end(), out_itr);
 file.close();
+
+file_name=path+"/vec_noada_y"+list_para+".txt";
+file.open(file_name,ios_base::out);
+copy(vec_y.begin(), vec_y.end(), out_itr);
+file.close();
+
 
 return moments;
 }
@@ -181,44 +191,50 @@ vector<double> nt_steps_tr(double ds, double numruns, int i)
     
 
     // create vectors
-    vector<double> vec((numsam/printskip),0);
+    vector<double> vec_x((numsam/printskip),0);
+    vector<double> vec_y((numsam/printskip),0);
     vector<double> vec_g((numsam/printskip),0);
     vector<double> moments(4,0);
 
 
     // vector<vector<double>> vec_g(snapshot,vec);
-    double y1,gdt,gpdt,y0;
+    double gdt,gpdt_x,gpdt_y,y0,y1,x0,x1;
     int nt,ns,nsp;
     nsp=0;
-    #pragma omp parallel private(y1,gdt,gpdt,nt,y0) shared(vec,ns,moments,nsp)
+    #pragma omp parallel private(y1,gdt,gpdt_x,gpdt_y,nt,y0,x0,x1) shared(vec_x,vec_y,ns,moments,nsp)
     #pragma omp for
     for(ns = 0; ns <= numsam; ns++){ // run the loop for ns samples
-
         mt19937 generator(rd1());
         normal_distribution<double> normal(0, 1);
-        y0=0;
+        y0=1.;
+        x0=1.;
         for(nt = 0; nt<numruns; nt++) // run until time T (ie for Nt steps)
         {  
-            gdt=getg(y0)*ds;
-            gpdt=getgprime(y0)*ds;
+            gdt=getg(x0,y0)*ds;
+            gpdt_x=getgprime_x(x0,y0)*ds;
+            gpdt_y=getgprime_y(x0,y0)*ds;
 
-            y1 = y0-Up(y0)*gdt+gpdt*tau+sqrt(2*gdt*tau)*normal(generator);
+            x1 = x0-Upx(x0,y0)*gdt+gpdt_x*tau+sqrt(2*gdt*tau)*normal(generator);
+            y1 = y0-Upy(x0,y0)*gdt+gpdt_y*tau+sqrt(2*gdt*tau)*normal(generator);
+
             y0 = y1;
+            x0 = x1;
         }
 
     // save the values every printskip
     if(ns%printskip==0){
-        vec[nsp]=y1;
+        vec_x[nsp]=x1;
+        vec_y[nsp]=y1;
         vec_g[nsp]=gdt/ds;
         nsp+=1;
     }
  
 
     // compute the moments
-    moments[0]+=y1;
-    moments[1]+=y1*y1;
-    moments[2]+=y1*y1*y1;
-    moments[3]+=y1*y1*y1*y1;
+    moments[0]+=x1;
+    moments[1]+=y1;
+    moments[2]+=x1*y1;
+    moments[3]+=U(x1,y1);
 
     }
 
@@ -229,19 +245,24 @@ moments[2]=moments[2]/numsam;
 moments[3]=moments[3]/numsam;
 
 // copy the value in a txt file
+string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_2d";
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); 
-string file_name="data_easy/vec_tr"+list_para+".txt";
+string file_name=path+"/vec_tr_x"+list_para+".txt";
 file.open(file_name,ios_base::out);
 ostream_iterator<double> out_itr(file, "\n");
-copy(vec.begin(), vec.end(), out_itr);
+copy(vec_x.begin(), vec_x.end(), out_itr);
 file.close();
 
-file_name="data_easy/vec_g"+list_para+".txt";
+file_name=path+"/vec_tr_y"+list_para+".txt";
 file.open(file_name,ios_base::out);
-ostream_iterator<double> out_itr3(file, "\n");
-copy(vec_g.begin(), vec_g.end(), out_itr3);
+copy(vec_y.begin(), vec_y.end(), out_itr);
+file.close();
+
+file_name=path+"/vec_g"+list_para+".txt";
+file.open(file_name,ios_base::out);
+copy(vec_g.begin(), vec_g.end(), out_itr);
 file.close();
 
 return moments;
@@ -287,55 +308,60 @@ int main(){
         moments_tr_2[i]=moments_di[1];
         moments_tr_3[i]=moments_di[2];
         moments_tr_4[i]=moments_di[3];
- 
+
     }
 
     // * SAVE THE COMPUTED MOMENTS IN A FILE
     /////////////////////////////////////////
+    string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_2d";
+
     // NON ADAPTIVE
     fstream file;
     file << fixed << setprecision(16) << endl;
-    string file_name="data_easy/noada_moment1.txt";
+    string file_name=path+"/noada_moment1.txt";
     file.open(file_name,ios_base::out);
     ostream_iterator<double> out_itr(file, "\n");
     copy(moments_1.begin(), moments_1.end(), out_itr);
     file.close();
 
-    file_name="data_easy/noada_moment2.txt";
+    file_name=path+"/noada_moment2.txt";
     file.open(file_name,ios_base::out);
     copy(moments_2.begin(), moments_2.end(), out_itr);
     file.close();
 
-    file_name="data_easy/noada_moment3.txt";
+    file_name=path+"/noada_moment3.txt";
     file.open(file_name,ios_base::out);
     copy(moments_3.begin(), moments_3.end(), out_itr);
     file.close();
 
-    file_name="data_easy/noada_moment4.txt";
+    file_name=path+"/noada_moment4.txt";
     file.open(file_name,ios_base::out);
     copy(moments_4.begin(), moments_4.end(), out_itr);
     file.close();
 
     // TRANSFORMED
-    file_name="data_easy/tr_moment1.txt";
+    file_name=path+"/tr_moment1.txt";
     file.open(file_name,ios_base::out);
     copy(moments_tr_1.begin(), moments_tr_1.end(), out_itr);
     file.close();
 
-    file_name="data_easy/tr_moment2.txt";
+    file_name=path+"/tr_moment2.txt";
     file.open(file_name,ios_base::out);
     copy(moments_tr_2.begin(), moments_tr_2.end(), out_itr);
     file.close();
 
-    file_name="data_easy/tr_moment3.txt";
+    file_name=path+"/tr_moment3.txt";
     file.open(file_name,ios_base::out);
     copy(moments_tr_3.begin(), moments_tr_3.end(), out_itr);
     file.close();
 
-    file_name="data_easy/tr_moment4.txt";
+    file_name=path+"/tr_moment4.txt";
     file.open(file_name,ios_base::out);
     copy(moments_tr_4.begin(), moments_tr_4.end(), out_itr);
-    file.close();
+    file.close(); 
+    
+
+
 
     // * SAVE THE TIME AND PARAMETERS OF THE SIMULATION IN A INFO FILE
     ///////////////////////////////////////////////////////////////////
@@ -345,8 +371,10 @@ int main(){
     auto duration_s = duration_cast<seconds>(stop - start);
     auto duration_ms = duration_cast<microseconds>(stop - start);
     // save the parameters in a file info
-    string parameters="Spring-M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-a="+to_string(a)+"-b="+to_string(b)+"-c="+to_string(c)+"-x0="+to_string(x0)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
-    string information="data_easy/parameters_used.txt";
+    // string parameters="Spring-M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-a="+to_string(a)+"-b="+to_string(b)+"-c="+to_string(c)+"-x0="+to_string(x0)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
+    string parameters="DW-M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-c="+to_string(c)+"-s="+to_string(s)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
+
+    string information=path+"/parameters_used.txt";
     file.open(information,ios_base::out);
     file << parameters;
     file <<"\n";

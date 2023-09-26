@@ -19,15 +19,29 @@ global dtlist
 # tau=0.1
 # dtlist = np.array([0.01,0.03,0.05,0.07,0.09,0.1,0.2,0.3,0.4])
 
-a=  2.75
-b=  0.1
-x0= 0.5
-c=  0.1
-tau=0.1
+# a=  2.75
+# b=  0.1
+# x0= 0.5
+# c=  0.1
+# tau=0.1
 #dtlist = np.array([0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6])
 #dtlist = np.array([0.005,0.01,0.05,0.1,0.5])
 # dtlist = np.array([0.009,0.02,0.04,0.06,0.08,0.1,0.2,0.4,0.6])
 dtlist = np.array([np.exp(-4.5),np.exp(-4.),np.exp(-3.5),np.exp(-3.),np.exp(-2.5),np.exp(-2.),np.exp(-1.5),np.exp(-1.),np.exp(-.5)])
+dtlist = np.array([np.exp(-4.5), np.exp(-4.21), np.exp(-3.93), np.exp(-3.64), np.exp(-3.36), np.exp(-3.07), np.exp(-2.79), np.exp(-2.5) , np.exp(-2.21), np.exp(-1.93), np.exp(-1.64), np.exp(-1.36), np.exp(-1.07), np.exp(-0.79), np.exp(-0.5)])
+dtlist = np.array([0.0005,0.01,0.05,0.07])
+# def U(x):
+#     res = (a**1.5*b**0.5*x0*np.arctan((a/b)**0.5*(x-x0))+(a*b*(a*x0*(x-x0)-b))/(a*(x-x0)**2+b)+c*(x-x0)**2+2*c*(x-x0)*x0)*0.5
+#     return res
+
+## Parameters 
+a=0.4
+c=1.3
+
+tau=0.1
+def U(x):
+    res= ((x+a)*(x+a)-0.0001)*np.power((x-c),4)
+    return res
 
 dtlist = np.array([np.exp(-4.5), np.exp(-4.21), np.exp(-3.93), np.exp(-3.64), np.exp(-3.36), np.exp(-3.07), np.exp(-2.79), np.exp(-2.5) , np.exp(-2.21), np.exp(-1.93), np.exp(-1.64), np.exp(-1.36), np.exp(-1.07), np.exp(-0.79), np.exp(-0.5)])
 
@@ -62,9 +76,7 @@ def openCfile(file):
     mat=np.array(mat)
     return(mat) #return the value of the matrix.
 
-def U(x):
-    res = (a**1.5*b**0.5*x0*np.arctan((a/b)**0.5*(x-x0))+(a*b*(a*x0*(x-x0)-b))/(a*(x-x0)**2+b)+c*(x-x0)**2+2*c*(x-x0)*x0)*0.5
-    return res
+
 
 def get_slope(accuracy_list,dt_list):
     #######################################
@@ -157,3 +169,38 @@ def moment_list(dt_list,tau,dta_noada,range_int):
 
     return(mom1_list,mom2_list,mom3_list,mom4_list,mom_1_plussd,mom_2_plussd,mom_3_plussd,mom_4_plussd)
 
+def openCfile_y(file):
+    with open(file) as f:
+        cols = f.readlines() #columns in the txt file
+    n_col = len(cols) #number of columns in the text file
+    # when fill_p is 1, then fill in the matrix q
+    fill_p=0
+    fill_g=0
+    # vector of res
+    vals_q=[] #create an empty column i 
+    vals_p=[] #create an empty column i
+    vals_g=[] #create an empty column i  
+    for i in range(n_col): # for each columns 
+        if cols[i]=='y\n':
+            fill_q=1
+            i+=1
+        if cols[i]=='p\n':
+            fill_p=1
+            fill_q=0
+            i+=1
+        if cols[i]=='g\n':
+            fill_g=1
+            fill_q=0
+            fill_p=0
+            i+=1
+        # clean up the cols 
+        elems_i=cols[i].split(" ") #split the elements using " "
+        for elem in elems_i: #for each element of the list 
+            if elem!="\n" and elem!=" ": #compare each elements and discard " " and "\n"
+                if fill_q==1:
+                    vals_q.append(float(elem)) #append elems that are floats to the vector of interest
+                elif fill_p==1:
+                    vals_p.append(float(elem))
+                elif fill_g==1:
+                    vals_g.append(float(elem))
+    return np.array(vals_q),np.array(vals_p),np.array(vals_g)

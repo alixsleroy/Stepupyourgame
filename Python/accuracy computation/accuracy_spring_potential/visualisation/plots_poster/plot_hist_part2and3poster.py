@@ -11,12 +11,12 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("Python/accuracy/accuracy_1dim")
 
-from settings import *
+from settings_poster import *
 from pot_definition import *
 
 
 ### Plot parameters: 
-font_size = 20
+font_size = 10
 font_size1=20
 
 line_w=3
@@ -51,6 +51,7 @@ myyellow=(221/235,170/235,51/235)
 mygrey=(187/235,187/235,187/235)
 mygreen="#66BB55"
 mymagenta="#7733DD"
+
 
 
 plt.rc('xtick', labelsize=font_size) 
@@ -122,9 +123,9 @@ if True==True:
     range_bins=[-4,2]
     ## Parameters 
     list_param = str(pot)+'-tau='+str(tau)+'-M='+str(M)+'m='+str(m)+"-Nt="+str(Nt)+"-ns="+str(n_samples)
-    df_noada=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_noada_"+list_param)
-    df_tr=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_tr_"+list_param)
-    df_re=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_re_"+list_param)
+    df_noada=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_noada_"+list_param)
+    df_tr=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_tr_"+list_param)
+    df_re=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_re_"+list_param)
 
     ## Set up the plots 
 
@@ -176,7 +177,7 @@ if True==True:
 ####################### PLOT PART 3 TRANSFORMED ########################################
 ###########################################################################################
 
-if True==True:
+if True==False:
 
     nbins=150
     ## Set up the plots 
@@ -200,9 +201,9 @@ if True==True:
     range_int=[-5,4]
 
     list_param = str(pot)+'-tau='+str(tau)+'-M='+str(M)+'m='+str(m)+"-Nt="+str(Nt)+"-ns="+str(n_samples) #+"-h="+str(h)
-    df_noada=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_noada_"+list_param)
-    df_tr=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_tr_"+list_param)
-    df_re=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_re_"+list_param)
+    df_noada=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_noada_"+list_param)
+    df_tr=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_tr_"+list_param)
+    df_re=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_re_"+list_param)
 
 
     # List of time
@@ -251,9 +252,9 @@ if True==True:
     M=2
 
     list_param = str(pot)+'-tau='+str(tau)+'-M='+str(M)+'m='+str(m)+"-Nt="+str(Nt)+"-ns="+str(n_samples)+"-h="+str(h)
-    df_noada_largeh=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_noada_"+list_param)
-    df_tr_largeh=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_tr_"+list_param)
-    df_re_largeh=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_re_"+list_param)
+    df_noada_largeh=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_noada_"+list_param)
+    df_tr_largeh=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_tr_"+list_param)
+    df_re_largeh=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_re_"+list_param)
 
     # List of time
     counti = df_noada_largeh['count'].max()
@@ -310,9 +311,9 @@ if True==False:
     Nt=int(1/h*T)+1
 
     list_param = str(pot)+'-tau='+str(tau)+'-M='+str(M)+'m='+str(m)+"-Nt="+str(Nt)+"-ns="+str(n_samples)+"-h="+str(h)
-    df_noada_largeh=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_noada_"+list_param)
-    df_tr_largeh=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_tr_"+list_param)
-    df_re_largeh=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_re_"+list_param)
+    df_noada_largeh=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_noada_"+list_param)
+    df_tr_largeh=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_tr_"+list_param)
+    df_re_largeh=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_re_"+list_param)
 
     ## Transformed 
     var =df_tr_largeh['g']
@@ -351,7 +352,7 @@ if True==False:
 ####################### PLOT PART 3 TRANSFORMED FOR BLITZ POSTER ##########################
 ###########################################################################################
 
-if True==True:
+if True==False:
     #line_w=5
     nbins=150
     plt.rc('xtick', labelsize=font_size1) 
@@ -376,9 +377,9 @@ if True==True:
     range_bins=[-4,2]
 
     list_param = str(pot)+'-tau='+str(tau)+'-M='+str(M)+'m='+str(m)+"-Nt="+str(Nt)+"-ns="+str(n_samples)+"-h="+str(h)
-    df_noada_largeh=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_noada_"+list_param)
-    df_tr_largeh=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_tr_"+list_param)
-    df_re_largeh=pd.read_pickle("Python/accuracy/accuracy_1dim/saved_pickles_over/plot_hist/dta_re_"+list_param)
+    df_noada_largeh=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_noada_"+list_param)
+    df_tr_largeh=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_tr_"+list_param)
+    df_re_largeh=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_re_"+list_param)
 
     # List of time
     counti = df_noada_largeh['count'].max()
@@ -415,3 +416,82 @@ if True==True:
     ax1.legend(loc='upper left',ncols=1,fancybox=True,shadow=True,fontsize=font_size) #bbox_to_anchor=(-1.4, 1.225)
     ax1.set_xlabel("x",fontsize=font_size1)
     plt.show()
+
+
+
+###########################################################################################
+####################### PLOT PART 3 TRANSFORMED FOR BLITZ POSTER ##########################
+###########################################################################################
+
+if True==True:
+    #line_w=5
+    nbins=150
+    plt.rc('xtick', labelsize=font_size1) 
+    plt.rc('ytick', labelsize=font_size1) 
+
+    ## Set up the plots 
+    fig, ((ax1))= plt.subplots(1,1,figsize=(6,6))# plt.figure(figsize=(4,4))
+    fig.subplots_adjust(left=0.1,bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
+    #font_size=20
+
+
+    ######################### SMALL H ###########################
+    #############################################################
+
+    ## SMALL H parameters
+    T=50
+    tau=0.1
+    n_samples=100000
+    h=0.001
+    Nt= int(T*1/h)+1
+    x=0
+    M=2
+    m=0.001
+    range_bins=[-4,2]
+    nbins=60
+    range_int=[-5,4]
+
+    list_param = str(pot)+'-tau='+str(tau)+'-M='+str(M)+'m='+str(m)+"-Nt="+str(Nt)+"-ns="+str(n_samples) #+"-h="+str(h)
+    df_noada=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_noada_"+list_param)
+    df_tr=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_tr_"+list_param)
+    df_re=pd.read_pickle("Stepupyourgame/data/python/accuracy_spring_potential_overdamped/saved_pickles_over/plot_hist/dta_re_"+list_param)
+
+
+    # List of time
+    counti = df_noada['count'].max()
+    # * Dataframe using hessian
+    df_noada_i=df_noada[df_noada['count']==counti]
+    # * Dataframe using first derivative 
+    df_tr_i=df_tr[df_tr['count']==counti]
+    # * Dataframe using no adaptivity 
+    df_re_i=df_re[df_re['count']==counti]
+
+
+    # SDE
+    histogram_sde,bins = np.histogram(df_noada_i["x"],bins=nbins,range=range_bins, density=True)
+    midx_sde = (bins[0:-1]+bins[1:])/2
+
+    # Invariant distribution
+    rho = np.exp(- U(midx_sde)/tau)
+    rho = rho / (np.sum(rho)* (midx_sde[1]-midx_sde[0]) ) # Normalize rho by dividing by its approx. integral
+
+    # Transformed
+    histogram_tr,bins = np.histogram(df_tr_i["x"],bins=nbins,range=range_bins, density=True)
+    midx_tr = (bins[0:-1]+bins[1:])/2
+
+    # Rescaled
+    histogram_re,bins = np.histogram(df_re_i["x"],bins=nbins,range=range_bins, density=True)
+    midx_re = (bins[0:-1]+bins[1:])/2
+
+    # Plots 
+    ax1.plot(midx_sde,rho,linewidth=line_w*2,label='Invariant distribution $\\rho_\infty(x)$',color=mygrey)
+    # axs.plot(midx_re,histogram_re,"-.",linewidth=line_w*1.3,label='Naive time rescaled\noverdamped SDE',color=mygreen)
+    ax1.plot(midx_tr,histogram_tr,"--",linewidth=line_w*1.3,label='Sampling the\ntransformed SDE',color=myblue)
+    ax1.plot(midx_sde,histogram_sde,":",linewidth=line_w*1.7,label='Sampling the SDE',color=myred)
+
+    # Legend 
+    ax1.legend(loc='upper left',ncols=1,fancybox=True,shadow=True,fontsize=font_size) #bbox_to_anchor=(-1.4, 1.225)
+    ax1.set_xlabel("x",fontsize=font_size1)
+    plt.show()
+    plt.show()
+

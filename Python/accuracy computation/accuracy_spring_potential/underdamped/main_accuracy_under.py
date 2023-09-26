@@ -13,9 +13,9 @@ sys.path.append("Python/Underdamped langevin/compare 3 schemes/accuracy_1dim")
 
 ## Import the package to run the samples 
 
-from Python.accuracy.accuracy_1dim.sample_under_noada import sample_noada
-from Python.accuracy.accuracy_1dim.sample_under_rescaled import sample_re
-from Python.accuracy.accuracy_1dim.sample_under_transformed import sample_tr
+from sample_under_noada import sample_noada
+from sample_under_rescaled import sample_re
+from sample_under_transformed import sample_tr
 
 ## Import the settings 
 from settings import *
@@ -52,7 +52,7 @@ def main():
     dta_re = dta_format_under(sample_re(n_samples,gamma,tau,Nt,h))
     dta_tr = dta_format_under(sample_tr(n_samples,gamma,tau,Nt,h))
     dta_noada = dta_format_under(sample_noada(n_samples,gamma,tau,Nt,h))
-    dta_re.to_pickle("Python/Underdamped langevin/compare 3 schemes/accuracy_1dim/saved_pickles/dta_re")
+    # dta_re.to_pickle("Python/Underdamped langevin/compare 3 schemes/accuracy_1dim/saved_pickles/dta_re")
     plot_one_distr_under(df_rescale=dta_re,df_noada=dta_noada,df_transfo=dta_tr,tau=tau)
     
     #######################################

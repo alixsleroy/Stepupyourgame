@@ -31,7 +31,7 @@ def one_traj_re(qp,Nt,dt,gamma,tau):
         #**********
         dB = np.random.normal(0,1)
         C =np.exp(-gdt*gamma) 
-        p = C*p+ np.sqrt((1-C*C)*tau)*dB
+        p = C*p+ np.sqrt((1.-C*C)*tau)*dB
 
         #**********
         #* STEP A *

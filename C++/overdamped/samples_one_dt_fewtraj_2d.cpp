@@ -247,7 +247,6 @@ int main(){
     // no adaptivity 
     int vec_noada=nt_steps_no_ada();
 
-
     // transformed 
     int vec_tr=nt_steps_tr();
 

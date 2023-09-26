@@ -21,5 +21,5 @@ mygrey="#BBBBBB"
 # mymagenta="#AA3377"
 # mygrey="#BBBBBB"
 
-plt.rc('xtick', labelsize=font_size) 
-plt.rc('ytick', labelsize=font_size) 
+# plt.rc('xtick', labelsize=font_size) 
+# plt.rc('ytick', labelsize=font_size) 

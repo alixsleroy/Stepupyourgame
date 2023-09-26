@@ -28,6 +28,7 @@ using namespace std::chrono;
 using namespace std;
 
 
+<<<<<<< HEAD
 #define m               0.00
 #define M               1.5
 #define gamma           1.            // friction coefficient
@@ -36,13 +37,26 @@ using namespace std;
 #define numsam          10       // total number of trajectories
 #define printskip       1
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v2"
+=======
+#define m               0.5
+#define M               1.5
+#define gamma           .1            // friction coefficient
+#define tau             .1            // 'temperature'
+#define T               500          // Time to integrate to
+#define numsam          100000       // total number of trajectories
+#define printskip       10
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
 
 /////////////////////////////////
 // Square potential definition //
 /////////////////////////////////
+<<<<<<< HEAD
 //vector<double> dtlist ={exp(0.0025), exp(0.0048), exp(0.0094), exp(0.0183), exp(0.0357), exp(0.0695), exp(0.1353), exp(0.2636),exp(0.5134), exp(1.)};
 vector<double> dtlist ={0.1  , 0.14 , 0.195, 0.273, 0.38 , 0.531, 0.741, 1.034, 1.443, 2.014};
+=======
+vector<double> dtlist = {exp(-3.93),exp(-3.36),exp(-2.79),exp(-2.21),exp(-1.64),exp(-1.07),exp(-0.5)};
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
 // /////////////////////////////////
 // // Spring potential definition //
@@ -180,7 +194,11 @@ moments[6]=moments[6]/numsam;
 moments[7]=moments[7]/numsam;
 
 // save the some of the values generated. 
+<<<<<<< HEAD
 string path=PATH;
+=======
+string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v2";
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); 
@@ -205,7 +223,11 @@ vector<double> one_step_tr(double dt, double numruns, int i)
     // ******** Try Boost
     random_device rd1;
     boost::random::mt19937 gen(rd1());
+<<<<<<< HEAD
     double q,p,f,g,gp,gdt,C,g0,g1,g_av;
+=======
+    double q,p,f,g,gp,gdt,C,g0,g1;
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
     int ns,nt,nsp;
 
     // Savethe values 
@@ -218,7 +240,11 @@ vector<double> one_step_tr(double dt, double numruns, int i)
 
     // Initialise snapshot
     nsp=0;
+<<<<<<< HEAD
     #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1,g_av) shared(ns,vec_q,vec_p,vec_g,moments,nsp)
+=======
+    #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1) shared(ns,vec_q,vec_p,vec_g,moments,nsp)
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
     #pragma omp for
     for(ns = 0; ns<numsam; ns++){
         // Normal generator 
@@ -226,7 +252,10 @@ vector<double> one_step_tr(double dt, double numruns, int i)
         normal_distribution<double> normal(0, 1);
         q = 0.;
         p = 0.;
+<<<<<<< HEAD
         g_av=0.;
+=======
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
         g = getg(q);
         gdt = dt*g;
         gp=getgprime(q);
@@ -246,11 +275,19 @@ vector<double> one_step_tr(double dt, double numruns, int i)
             //* STEP A *
             //**********
             // fixed point iteration
+<<<<<<< HEAD
             g0=getg(q+dt/4*p*g);
             g1=getg(q+dt/4*p*g0);
             g0=getg(q+dt/4*p*g1);
             g1=getg(q+dt/4*p*g0);
             gdt=g1*dt;
+=======
+            g0=getg(q+dt/2*p*g);
+            g1=getg(q+dt/2*p*g0);
+            g0=getg(q+dt/2*p*g1);
+            g1=getg(q+dt/2*p*g0);
+            gdt=g*dt;
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
             q += 0.5*gdt*p;
 
@@ -267,11 +304,19 @@ vector<double> one_step_tr(double dt, double numruns, int i)
             //* STEP A *
             //**********
             // fixed point iteration
+<<<<<<< HEAD
             g0=getg(q+dt/4*p*g);
             g1=getg(q+dt/4*p*g0);
             g0=getg(q+dt/4*p*g1);
             g1=getg(q+dt/4*p*g0);
             gdt=g1*dt;
+=======
+            g0=getg(q+dt/2*p*g);
+            g1=getg(q+dt/2*p*g0);
+            g0=getg(q+dt/2*p*g1);
+            g1=getg(q+dt/2*p*g0);
+            gdt=g*dt;
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
             q += 0.5*gdt*p;
 
             //**********
@@ -282,11 +327,15 @@ vector<double> one_step_tr(double dt, double numruns, int i)
             gdt = dt*g;
             p += 0.5*gdt*f;
 
+<<<<<<< HEAD
             //* Save values of g
             g_av+=g;
             // cout<<"\ng\n";
             // cout<<g;
 
+=======
+         
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
         }
 
@@ -297,7 +346,11 @@ vector<double> one_step_tr(double dt, double numruns, int i)
     moments[0]+=q;
     moments[1]+=q*q;
     moments[2]+=q*q*q;
+<<<<<<< HEAD
     moments[3]+=g_av/numruns; // save the values taken by g 
+=======
+    moments[3]+=q*q*q*q;
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
     // compute the moments for p 
     moments[4]+=p;
@@ -327,7 +380,11 @@ vector<double> one_step_tr(double dt, double numruns, int i)
 
 
     // save the some of the values generated. 
+<<<<<<< HEAD
     string path=PATH;
+=======
+    string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v2";
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
     fstream file;
     file << fixed << setprecision(16) << endl;
     string list_para="i="+to_string(i); 
@@ -388,6 +445,7 @@ int main(void) {
         moments_tr_2[i]=moments_di[1];
         moments_tr_3[i]=moments_di[2];
         moments_tr_4[i]=moments_di[3];
+<<<<<<< HEAD
         cout<<"\ni\n";
         cout<<i;
         cout<<"\n Average g \n";
@@ -397,6 +455,14 @@ int main(void) {
     // * SAVE THE COMPUTED MOMENTS IN A FILE
     /////////////////////////////////////////
     string path=PATH;
+=======
+ 
+    }
+
+       // * SAVE THE COMPUTED MOMENTS IN A FILE
+    /////////////////////////////////////////
+    string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v2";
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
     // NON ADAPTIVE
     fstream file;
@@ -442,14 +508,20 @@ int main(void) {
     file.open(file_name,ios_base::out);
     copy(moments_tr_4.begin(), moments_tr_4.end(), out_itr);
     file.close();
+<<<<<<< HEAD
     }
+=======
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
     // * SAVE THE TIME AND PARAMETERS OF THE SIMULATION IN A INFO FILE
     ///////////////////////////////////////////////////////////////////
     // find time by subtracting stop and start timepoints 
+<<<<<<< HEAD
     string path=PATH;
     fstream file;
     ostream_iterator<double> out_itr(file, "\n");
+=======
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
     auto stop = high_resolution_clock::now();
     auto duration_m = duration_cast<minutes>(stop - start);
     auto duration_s = duration_cast<seconds>(stop - start);
@@ -463,7 +535,11 @@ int main(void) {
     file <<"list of dt";
     copy(dtlist.begin(), dtlist.end(), out_itr);
     file.close();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 return 0;
 }
 
