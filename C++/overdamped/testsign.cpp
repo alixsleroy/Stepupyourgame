@@ -36,8 +36,12 @@ int sign(float x){
 }
 
 int main(){
+    
+    int res=sign(-1);
+    double a=1.5;
+    cout<<a*res;
 
-    cout<<sign(0.);
+
     
     return 0;
 }

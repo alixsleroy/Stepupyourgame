@@ -58,7 +58,7 @@ double U(double x, double y)
     return res;
 }
 
-int sign(float x){
+double sign(double x){
     return (x > 0) - (x < 0);
 }
 
