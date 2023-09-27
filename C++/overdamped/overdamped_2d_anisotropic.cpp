@@ -24,6 +24,7 @@
 #include <boost/random/random_device.hpp> //boost function
 #include <boost/random/normal_distribution.hpp> //include normal distribution
 #include <boost/random/mersenne_twister.hpp>
+#include <boost/math/special_functions/sign.hpp>
 #include <chrono>
 
 using namespace std::chrono;
@@ -31,28 +32,34 @@ using namespace std::chrono;
 using namespace std;
 
 
-#define m1              .5           // minimum step scale factor
-#define M1              1./1.5   
-#define m               0.9           // minimum step scale factor
-#define M               1.2              // maximum step scale factor
-#define numsam          10           // number of sample
+#define m1              .005           // minimum step scale factor
+#define M1              1./1.   
+// #define m               0.9           // minimum step scale factor
+// #define M               1.2              // maximum step scale factor
+#define numsam          10000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
 #define printskip       1
 #define PATH            "./overdamped_2d"
+
 //////////////////
 // Anisotropic  //
 ////////////////// 
 //vector<double> dtlist = {0.02 , 0.023, 0.027, 0.03 , 0.033, 0.037, 0.04 , 0.043, 0.047,0.05};
 vector<double> dtlist = {0.003 , 0.0039, 0.005 , 0.0065, 0.0084, 0.0109, 0.014 , 0.0181,0.0234, 0.0302};
 
-#define s 10. // parameter of how steep the double well is 
-#define c .45 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+#define s 15. // parameter of how steep the double well is 
+#define c 1. //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+
 
 double U(double x, double y)
 {
     double res=s*(x*x+y*y-1)*(x*x+y*y-1);
     return res;
+}
+
+int sign(float x){
+    return (x > 0) - (x < 0);
 }
 
 double Upx(double x,double y)
@@ -70,10 +77,10 @@ double Upy(double x,double y)
 double getg(double x, double y)
 {
     double xc,xa,f,f2,xi,den,g;
-    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y));
+    f=(c*s*pow(x*x+y*y-1,2)*(x*x+y*y));
     f2=f*f;
     xi=sqrt(1+m1*f2);
-    den=M1*xi+f;
+    den=M1*xi+abs(f);
     g=xi/den;
     return(g);
 }
@@ -81,23 +88,23 @@ double getg(double x, double y)
 
 double getgprime_x(double x,double y)
 {
-    double xc,xa,f,f2,xi,fp,gp;
-    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y));
+    double f,f2,fp,xi,gp;
+    f=(c*s*pow(x*x+y*y-1,2)*(x*x+y*y));
     f2=f*f;
-    fp=c*s*4*(x*x+y*y-1)*x;
+    fp=c*s*2*(x*x+y*y-1)*(3*x*x+3*y*y-1)*x;
     xi=sqrt(1+m1*f2);
-    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    gp=-sign(f)*fp/(xi*pow(M1*xi+abs(f),2));
     return(gp);
     }
 
 double getgprime_y(double x,double y)
 {
-    double xc,xa,f,f2,xi,fp,gp;
-    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1));
+    double f,f2,fp,xi,gp;
+    f=(c*s*pow(x*x+y*y-1,2)*(x*x+y*y));
     f2=f*f;
-    fp=c*s*4*(x*x+y*y-1)*y;
+    fp=c*s*2*(x*x+y*y-1)*(3*x*x+3*y*y-1)*y;
     xi=sqrt(1+m1*f2);
-    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    gp=-sign(f)*fp/(xi*pow(M1*xi+abs(f),2));
     return(gp);
     }
 
@@ -309,6 +316,10 @@ int main(){
   
 
         double g_av=moments_di[3];
+        cout<<"\n";
+        cout<<g_av;
+        cout<<"\n";
+
         double gdti=g_av*dti;
   
         moments_di=nt_steps_no_ada(gdti,ni,i);
@@ -385,7 +396,7 @@ int main(){
     auto duration_s = duration_cast<seconds>(stop - start);
     auto duration_ms = duration_cast<microseconds>(stop - start);
     // save the parameters in a file info
-    string parameters="DW-M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-c="+to_string(c)+"-s="+to_string(s)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
+    string parameters="DW-M1="+to_string(M1)+"-m1="+to_string(m1)+"-Ns="+to_string(numsam)+"-c="+to_string(c)+"-s="+to_string(s)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     ostream_iterator<double> out_itr(file, "\n");
     string information=path+"/parameters_used.txt";
     file.open(information,ios_base::out);
