@@ -34,7 +34,7 @@ using namespace std;
 // #define M               1.1              // maximum step scale factor
 #define m1              1.          // minimum step scale factor
 #define M1              1./1.1     
-#define numsam          10000           // number of sample
+#define numsam          100000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
 #define printskip       10
@@ -45,7 +45,7 @@ vector<double> dtlist = {0.003 , 0.0039, 0.005 , 0.0065, 0.0084, 0.0109, 0.014 ,
 // Anisotropic
 /////////////////////////////////
 #define s 20. // parameter of how steep the double well is 
-#define c 0.01 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+#define c 0.1 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
 
 double Up(double x)
 {

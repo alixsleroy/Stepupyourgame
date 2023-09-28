@@ -26,10 +26,10 @@
 
 using namespace std;
 #define m1              .01        // minimum step scale factor
-#define M1              1./1.5              // maximum step scale factor
+#define M1              1./1.4              // maximum step scale factor
 #define numsam          10          // number of sample
-#define T               500.         // total number of trajectories
-#define ds              0.03
+#define T               50.         // total number of trajectories
+#define ds              0.01
 #define tau             0.1            
 #define numruns         T/ds         // total number of trajectories
 
@@ -37,13 +37,21 @@ using namespace std;
 //////////////////
 // Anisotropic  //
 ////////////////// 
-#define s 10. // parameter of how steep the double well is 
-#define c .45 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+//vector<double> dtlist = {0.02 , 0.023, 0.027, 0.03 , 0.033, 0.037, 0.04 , 0.043, 0.047,0.05};
+vector<double> dtlist = {0.003 , 0.0039, 0.005 , 0.0065, 0.0084, 0.0109, 0.014 , 0.0181,0.0234, 0.0302};
+
+#define s 15. // parameter of how steep the double well is 
+#define c .4 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+
 
 double U(double x, double y)
 {
     double res=s*(x*x+y*y-1)*(x*x+y*y-1);
     return res;
+}
+
+double sign(double x){
+    return (x > 0) - (x < 0);
 }
 
 double Upx(double x,double y)
@@ -61,10 +69,10 @@ double Upy(double x,double y)
 double getg(double x, double y)
 {
     double xc,xa,f,f2,xi,den,g;
-    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y));
+    f=(c*s*pow(x*x+y*y-1,2)*(x*x+y*y));
     f2=f*f;
     xi=sqrt(1+m1*f2);
-    den=M1*xi+f;
+    den=M1*xi+abs(f);
     g=xi/den;
     return(g);
 }
@@ -72,26 +80,25 @@ double getg(double x, double y)
 
 double getgprime_x(double x,double y)
 {
-    double xc,xa,f,f2,xi,fp,gp;
-    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y));
+    double f,f2,fp,xi,gp;
+    f=(c*s*pow(x*x+y*y-1,2)*(x*x+y*y));
     f2=f*f;
-    fp=c*s*4*(x*x+y*y-1)*x;
+    fp=c*s*2*(x*x+y*y-1)*(3*x*x+3*y*y-1)*x;
     xi=sqrt(1+m1*f2);
-    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    gp=-sign(f)*fp/(xi*pow(M1*xi+abs(f),2));
     return(gp);
     }
 
 double getgprime_y(double x,double y)
 {
-    double xc,xa,f,f2,xi,fp,gp;
-    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1));
+    double f,f2,fp,xi,gp;
+    f=(c*s*pow(x*x+y*y-1,2)*(x*x+y*y));
     f2=f*f;
-    fp=c*s*4*(x*x+y*y-1)*y;
+    fp=c*s*2*(x*x+y*y-1)*(3*x*x+3*y*y-1)*y;
     xi=sqrt(1+m1*f2);
-    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    gp=-sign(f)*fp/(xi*pow(M1*xi+abs(f),2));
     return(gp);
     }
-
 
 
 

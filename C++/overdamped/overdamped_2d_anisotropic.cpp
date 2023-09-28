@@ -36,8 +36,8 @@ using namespace std;
 #define M1              1./1.   
 // #define m               0.9           // minimum step scale factor
 // #define M               1.2              // maximum step scale factor
-#define numsam          10000           // number of sample
-#define T               100       // final time of all simulations 
+#define numsam          50           // number of sample
+#define T               20       // final time of all simulations 
 #define tau             0.1  
 #define printskip       1
 #define PATH            "./overdamped_2d"
@@ -242,7 +242,7 @@ vector<double> nt_steps_tr(double ds, double numruns, int i)
  
 
     // compute the moments
-    if (std::isnan(x1)==true or std::isnan(y1)==true){x1=pow(10,16); y1=pow(10,16);moments[3]+=1;}
+    if (std::isnan(x1)==true or std::isnan(y1)==true){x1=pow(10,16); y1=pow(10,16);}
     moments[0]+=x1;
     moments[1]+=y1;
     moments[2]+=U(x1,y1);
