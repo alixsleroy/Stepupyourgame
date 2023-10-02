@@ -32,12 +32,12 @@ using namespace std::chrono;
 using namespace std;
 
 
-#define m1              .005           // minimum step scale factor
-#define M1              1./1.   
+#define m1              .0011           // minimum step scale factor
+#define M1              1./1.1   
 // #define m               0.9           // minimum step scale factor
 // #define M               1.2              // maximum step scale factor
-#define numsam          50           // number of sample
-#define T               20       // final time of all simulations 
+#define numsam          10000           // number of sample
+#define T               100       // final time of all simulations 
 #define tau             0.1  
 #define printskip       1
 #define PATH            "./overdamped_2d"
@@ -46,10 +46,9 @@ using namespace std;
 // Anisotropic  //
 ////////////////// 
 //vector<double> dtlist = {0.02 , 0.023, 0.027, 0.03 , 0.033, 0.037, 0.04 , 0.043, 0.047,0.05};
-vector<double> dtlist = {0.003 , 0.0039, 0.005 , 0.0065, 0.0084, 0.0109, 0.014 , 0.0181,0.0234, 0.0302};
-
+vector<double> dtlist ={0.0005, 0.0016, 0.0026, 0.0037, 0.0047, 0.0058, 0.0068, 0.0079,0.0089, 0.01};
 #define s 15. // parameter of how steep the double well is 
-#define c 1. //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+#define c .1 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
 
 
 double U(double x, double y)
@@ -316,9 +315,9 @@ int main(){
   
 
         double g_av=moments_di[3];
-        cout<<"\n";
-        cout<<g_av;
-        cout<<"\n";
+        // cout<<"\n";
+        // cout<<g_av;
+        // cout<<"\n";
 
         double gdti=g_av*dti;
   

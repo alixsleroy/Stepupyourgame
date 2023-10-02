@@ -25,39 +25,68 @@
 #include <boost/random/mersenne_twister.hpp>
 
 using namespace std;
-#define m1              5          // minimum step scale factor
-#define M1              1./1.5              // maximum step scale factor
-#define numsam          5          // number of sample
-#define T               1000         // total number of trajectories
-#define ds              0.015
-#define tau             0.1            
-#define numruns         T/ds         // total number of trajectories
-
+#define m1              0.01          // minimum step scale factor
+#define M1              1./1.1     
+#define numsam          5           // number of sample
+#define numruns         100000
+#define ds              0.01
+#define T               100       // final time of all simulations 
+#define tau             0.1  
+#define printskip       10
+#define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_dw_fewtraj";
 
 /////////////////////////////////
-// Anisotropic
+// Double well
 /////////////////////////////////
-#define s 20. // parameter of how steep the double well is 
-#define c 0.05 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+#define a .15 // parameter of how steep the double well is 
+#define c 1.35 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
 
-double Up(double x)
-{
-    double res=4*s*x*(x*x-1); //-3*x*x;
-    return res;
-}
+double U(double x){
+    return ((x+a)*(x+a)-0.0001)*pow((x-c),4);
+    }
 
-//g depends on 1/((x-c)^3)
+double Up(double x){
+    double xc =x-c;
+    double xa=x+a;
+    double v=2*xc*xc*xc*(xa*xc+2*xa*xa-0.0002);
+    return v;}
+
+
+// //g depends on (x-c)^3
+// ///////////////////////////////////
+
+// double getg(double x)
+// {
+//     double f,f2,xi,den,g;
+//     f=pow(x-c,3);
+//     f2=f*f;
+//     xi=sqrt(1+m1*f2);
+//     den=M1*xi+abs(f);
+//     g=xi/den;
+//     return(g);
+// }
+
+// double getgprime(double x)
+// {
+//     double xc,xa,f,f2,xi,fp,gp;
+//     f=pow(x-c,3);
+//     f2=f*f;
+//     fp=3*pow(x-c,2);
+//     xi=sqrt(1+m1*f2);
+//     gp=-f*fp/(sqrt(f2)*xi*pow(M1*xi+abs(f),2));
+//     return(gp);
+//     }
+
+//g depends on (x-c)^32(x+a)^2
 ///////////////////////////////////
 
 double getg(double x)
 {
-    double xc,xa,f,f2,xi,den,g;
-    xc=x-1;
-    xa=x+1;
-    f=abs(c*s*xa*xa*xc*xc);
+    double f,f2,xi,den,g;
+    f=pow(x-c,3)*2*pow(x+a,2);
     f2=f*f;
-    xi=sqrt(1+m1*f2);
-    den=M1*xi+f;
+    xi=np.sqrt(1+m1*f2);
+    den=M1*xi+abs(f);
     g=xi/den;
     return(g);
 }
@@ -65,15 +94,55 @@ double getg(double x)
 double getgprime(double x)
 {
     double xc,xa,f,f2,xi,fp,gp;
-    xc=x-1;
-    xa=x+1;
-    f=c*s*xa*xa*xc*xc;
+    f=pow(x-c,3)*2*pow(x+a,2);
     f2=f*f;
-    fp=c*4*s*(x*x-1)*x;
+    fp=(x+a)*pow(x-c,2)*(3*a-2*c+5*x)*2;
     xi=sqrt(1+m1*f2);
-    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    gp=-f*fp/(sqrt(f2)*xi*pow(M1*xi+abs(f),2));
     return(gp);
     }
+
+
+/////////////////////////////////
+// Anisotropic
+/////////////////////////////////
+// #define s 20. // parameter of how steep the double well is 
+// #define c 0.05 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+
+// double Up(double x)
+// {
+//     double res=4*s*x*(x*x-1); //-3*x*x;
+//     return res;
+// }
+
+// //g depends on 1/((x-c)^3)
+// ///////////////////////////////////
+
+// double getg(double x)
+// {
+//     double xc,xa,f,f2,xi,den,g;
+//     xc=x-1;
+//     xa=x+1;
+//     f=abs(c*s*xa*xa*xc*xc);
+//     f2=f*f;
+//     xi=sqrt(1+m1*f2);
+//     den=M1*xi+f;
+//     g=xi/den;
+//     return(g);
+// }
+
+// double getgprime(double x)
+// {
+//     double xc,xa,f,f2,xi,fp,gp;
+//     xc=x-1;
+//     xa=x+1;
+//     f=c*s*xa*xa*xc*xc;
+//     f2=f*f;
+//     fp=c*4*s*(x*x-1)*x;
+//     xi=sqrt(1+m1*f2);
+//     gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+//     return(gp);
+//     }
 
 
 
@@ -274,12 +343,12 @@ int nt_steps_no_ada()
     
     fstream file;
     string file_name;
-    string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_fewtraj";
+    string path=PATH;
     for(int nsps = 0; nsps<numsam; nsps++){
         file_name=path+"/vec_noada"+to_string(nsps)+".txt";
         file.open(file_name,ios_base::out);
         ostream_iterator<double> out_itr(file, "\n");
-        file<<"y\n";
+        // file<<"y\n";
         copy(vec[nsps].begin(), vec[nsps].end(), out_itr);
         file.close();
         }
@@ -328,12 +397,12 @@ int nt_steps_tr()
     // Save values of t
     fstream file;
     string file_name;
-    string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_fewtraj";
+    string path=PATH;
     for(int nsps = 0; nsps<numsam; nsps++){
         file_name=path+"/vec_tr"+to_string(nsps)+".txt";
         file.open(file_name,ios_base::out);
         ostream_iterator<double> out_itr(file, "\n");
-        file<<"y\n";
+        // file<<"y\n";
         copy(vec[nsps].begin(), vec[nsps].end(), out_itr);
         file.close();
         }
@@ -343,7 +412,7 @@ int nt_steps_tr()
         file_name=path+"/vec_g"+to_string(nsps)+".txt";
         file.open(file_name,ios_base::out);
         ostream_iterator<double> out_itr(file, "\n");
-        file<<"y\n";
+        // file<<"y\n";
         copy(vec_g[nsps].begin(), vec_g[nsps].end(), out_itr);
         file.close();
         }
@@ -390,12 +459,12 @@ int nt_steps_re()
     }
     fstream file;
     string file_name;
-    string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_fewtraj";
+    string path=PATH; 
     for(int nsps = 0; nsps<numsam; nsps++){
         file_name=path+"/vec_re"+to_string(nsps)+".txt";
         file.open(file_name,ios_base::out);
         ostream_iterator<double> out_itr(file, "\n");
-        file<<"y\n";
+        // file<<"y\n";
         copy(vec[nsps].begin(), vec[nsps].end(), out_itr);
         file.close();
         }

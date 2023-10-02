@@ -25,7 +25,6 @@ using namespace std::chrono;
  
 using namespace std;
 
-<<<<<<< HEAD
 #define m               0.001
 #define M               1.5
 #define gamma           1.            // friction coefficient
@@ -34,27 +33,13 @@ using namespace std;
 #define numsam          10000       // total number of trajectories
 #define printskip       10
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v0"
-=======
-#define m               0.5
-#define M               1.5
-#define gamma           1.            // friction coefficient
-#define tau             .1            // 'temperature'
-#define T               500          // Time to integrate to
-#define numsam          100       // total number of trajectories
-#define printskip       10
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
 
 
 /////////////////////////////////
 // Square potential definition //
 /////////////////////////////////
-<<<<<<< HEAD
 vector<double> dtlist ={0.1  , 0.14 , 0.195, 0.273, 0.38 , 0.531, 0.741, 1.034, 1.443, 2.014};
-=======
-//vector<double> dtlist = {exp(-4.5),exp(-4.21),exp(-3.93),exp(-3.64),exp(-3.36),exp(-3.07),exp(-2.79),exp(-2.5),exp(-2.21),exp(-1.93),exp(-1.64),exp(-1.36),exp(-1.07), exp(-0.79), exp(-0.5)};
-vector<double> dtlist = {exp(-3.93),exp(-3.36),exp(-2.79),exp(-2.21),exp(-1.64),exp(-1.07),exp(-0.5)};
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
 // /////////////////////////////////
 // // Spring potential definition //
@@ -220,11 +205,7 @@ vector<double> one_step_tr(double dt, double numruns, int i)
 
 
     // save the some of the values generated. 
-<<<<<<< HEAD
     string path=PATH;
-=======
-    string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v0";
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
     fstream file;
     file << fixed << setprecision(16) << endl;
     string list_para="i="+to_string(i); 
@@ -346,11 +327,7 @@ moments[6]=moments[6]/numsam;
 moments[7]=moments[7]/numsam;
 
 // save the some of the values generated. 
-<<<<<<< HEAD
 string path=PATH;
-=======
-string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v0";
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); 
@@ -407,18 +384,10 @@ int main(void) {
         moments_tr_3[i]=moments_di[2];
         moments_tr_4[i]=moments_di[3];
  
-<<<<<<< HEAD
 
     // * SAVE THE COMPUTED MOMENTS IN A FILE
     /////////////////////////////////////////
     string path=PATH;
-=======
-    }
-
-       // * SAVE THE COMPUTED MOMENTS IN A FILE
-    /////////////////////////////////////////
-    string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v0";
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 
     // NON ADAPTIVE
     fstream file;
@@ -464,11 +433,7 @@ int main(void) {
     file.open(file_name,ios_base::out);
     copy(moments_tr_4.begin(), moments_tr_4.end(), out_itr);
     file.close();
-<<<<<<< HEAD
     }
-=======
-
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
     // * SAVE THE TIME AND PARAMETERS OF THE SIMULATION IN A INFO FILE
     ///////////////////////////////////////////////////////////////////
     // find time by subtracting stop and start timepoints 
@@ -477,21 +442,15 @@ int main(void) {
     auto duration_s = duration_cast<seconds>(stop - start);
     auto duration_ms = duration_cast<microseconds>(stop - start);
     // save the parameters in a file info
-<<<<<<< HEAD
     string path=PATH;
     fstream file;
-=======
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
     string parameters="M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     string information=path+"/parameters_used.txt";
     file.open(information,ios_base::out);
     file << parameters;
     file <<"\n";
     file <<"list of dt";
-<<<<<<< HEAD
     ostream_iterator<double> out_itr(file, "\n");
-=======
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
     copy(dtlist.begin(), dtlist.end(), out_itr);
     file.close();
 
@@ -543,10 +502,6 @@ return 0;
 //     g=xi/den;
 //     return(g);
 // }
-<<<<<<< HEAD
-=======
-
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 // double getgprime(double x)
 // {
 //     double xc,xa,f,f2,xi,fp,gp;
@@ -559,16 +514,6 @@ return 0;
 //     gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
 //     return(gp);
 //     }
-<<<<<<< HEAD
-=======
-
-
-
-
-
-
-
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 // /////////////////////////////////
 // // Spring potential definition //
 // /////////////////////////////////
@@ -578,20 +523,12 @@ return 0;
 // #define b               0.1
 // #define x0              0.1
 // #define c               0.1
-<<<<<<< HEAD
-=======
-
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 // long double Up(double x)
 // {
 //    long double xx02= (x-x0)*(x-x0);
 //    long double wx =b/(b/a+xx02);
 //     return (wx*wx+c)*x;
 // }
-<<<<<<< HEAD
-=======
-
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 // double getg(double x)
 // {
 //     double wx,f,xi,g;
@@ -600,13 +537,7 @@ return 0;
 //     xi = f+m;
 //     g = 1/(1/M+1/sqrt(xi));
 //     return(g);
-<<<<<<< HEAD
 // }
-=======
-
-// }
-
->>>>>>> ef0a9a43faefdc2754d349208bb595f5e89feb4a
 // double getgprime(double x)
 // {
 //     double wx,f,fp,xi,gprime;

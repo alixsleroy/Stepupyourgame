@@ -33,39 +33,67 @@ using namespace std;
 // #define m               0.005           // minimum step scale factor
 // #define M               1.1              // maximum step scale factor
 #define m1              0.01          // minimum step scale factor
-#define M1              1./1.1     
-#define numsam          10000           // number of sample
+#define M1              1./1.2     
+#define numsam          100000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
 #define printskip       10
-#define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped"
+#define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_dw"
 
-vector<double> dtlist = {0.003 , 0.0039, 0.005 , 0.0065, 0.0084, 0.0109, 0.014 , 0.0181,0.0234, 0.0302};
-
+//vector<double> dtlist = {0.001 , 0.0039, 0.005 , 0.0065, 0.0084, 0.0109, 0.014 , 0.0181,0.0234, 0.0302};
+vector<double> dtlist = {0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1 };
 /////////////////////////////////
-// Anisotropic
+// Double well
 /////////////////////////////////
-#define s 20. // parameter of how steep the double well is 
-#define c 0.1 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+#define a .15 // parameter of how steep the double well is 
+#define c 1.35 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
 
-double Up(double x)
-{
-    double res=4*s*x*(x*x-1); 
-    return res;
-}
+double U(double x){
+    return ((x+a)*(x+a)-0.0001)*pow((x-c),4);
+    }
 
-//g depends on 1/((x-c)^3)
+double Up(double x){
+    double xc =x-c;
+    double xa=x+a;
+    double v=2*xc*xc*xc*(xa*xc+2*xa*xa-0.0002);
+    return v;}
+
+
+//g depends on (x-c)^3
+///////////////////////////////////
+
+// double getg(double x)
+// {
+//     double f,f2,xi,den,g;
+//     f=pow(x-c,3);
+//     f2=f*f;
+//     xi=sqrt(1+m1*f2);
+//     den=M1*xi+abs(f);
+//     g=xi/den;
+//     return(g);
+// }
+
+// double getgprime(double x)
+// {
+//     double xc,xa,f,f2,xi,fp,gp;
+//     f=pow(x-c,3);
+//     f2=f*f;
+//     fp=3*pow(x-c,2);
+//     xi=sqrt(1+m1*f2);
+//     gp=-f*fp/(sqrt(f2)*xi*pow(M1*xi+abs(f),2));
+//     return(gp);
+//     }
+
+//g depends on (x-c)^32(x+a)^2
 ///////////////////////////////////
 
 double getg(double x)
 {
-    double xc,xa,f,f2,xi,den,g;
-    xc=x-1;
-    xa=x+1;
-    f=abs(c*s*xa*xa*xc*xc);
+    double f,f2,xi,den,g;
+    f=pow(x-c,3)*2*pow(x+a,2);
     f2=f*f;
     xi=sqrt(1+m1*f2);
-    den=M1*xi+f;
+    den=M1*xi+abs(f);
     g=xi/den;
     return(g);
 }
@@ -73,97 +101,16 @@ double getg(double x)
 double getgprime(double x)
 {
     double xc,xa,f,f2,xi,fp,gp;
-    xc=x-1;
-    xa=x+1;
-    f=abs(c*s*xa*xa*xc*xc);
+    f=pow(x-c,3)*2*pow(x+a,2);
     f2=f*f;
-    fp=c*4*s*(x*x-1)*x;
+    fp=(x+a)*pow(x-c,2)*(3*a-2*c+5*x)*2;
     xi=sqrt(1+m1*f2);
-    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    gp=-f*fp/(sqrt(f2)*xi*pow(M1*xi+abs(f),2));
     return(gp);
     }
 
 
 
-/////////////////////////////////
-// Spring potential results //
-/////////////////////////////////
-//easier problem
-/////////////////////////////
-// #define a               1.0
-// #define b               1.0
-// #define x0              0.5
-// #define c               0.1
-// vector<double> dtlist = {0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6};
-
-// // hard problem
-// //////////////////////////////
-// //would need 10^7 samples
-// #define a               2.75
-// #define b               0.1
-// #define x0              0.5
-// #define c               0.1
-
-
-// vector<double> dtlist = {exp(-4.5),exp(-4.21),exp(-3.93),exp(-3.64),exp(-3.36),exp(-3.07),exp(-2.79),exp(-2.5),exp(-2.21),exp(-1.93),exp(-1.64),exp(-1.36),exp(-1.07), exp(-0.79), exp(-0.5)};
-
-
-
-
-// long double Up(double x)
-// {
-//    long double xx02= (x-x0)*(x-x0);
-//    long double wx =b/(b/a+xx02);
-//    return (wx*wx+c)*x;
-// }
-
-// ///////////////////////////////////
-// //g depends on w'(x) 
-// ///////////////////////////////////
-// double getg(double x)
-// {
-//     double wx,f,xi,g;
-//     f =2/b*(x-x0); //((b/a)+(x-x0))/b*b;
-//     xi = f*f+m*m;
-//     g = 1/(1/M+1/sqrt(xi));
-//     return(g);
-// }
-
-// double getgprime(double x)
-// {
-//     double wx,f,fp,xi,gprime;
-//     f =2/b*(x-x0); //((b/a)+(x-x0))/b*b;
-//     fp = 2/b ; ///(b*b);
-//     xi=sqrt(f*f+m*m);
-//     gprime= M*M*fp*f/(xi*(xi+M)*(xi+M));
-//     return(gprime);
-// }
-
-// /////////////////////////////////////
-// g depends on w(x) 
-/////////////////////////////////////
-
-// double getg(double x)
-// {
-//     double wx,f,xi,g;
-//     wx =(b/a+pow(x-x0,2))/b;
-//     f = wx*wx;
-//     xi = f+m;
-//     g = 1/(1/M+1/sqrt(xi));
-//     return(g);
-
-// }
-
-// double getgprime(double x)
-// {
-//     double wx,f,fp,xi,gprime;
-//     wx =(b/a+pow(x-x0,2))/b;
-//     f = wx*wx;
-//     fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
-//     xi=sqrt(f+m*m);
-//     gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
-//     return(gprime);
-// }
 
 /////////////////////////////
 // EM step - no adaptivity //
@@ -430,7 +377,7 @@ int main(){
     auto duration_s = duration_cast<seconds>(stop - start);
     auto duration_ms = duration_cast<microseconds>(stop - start);
     // save the parameters in a file info
-    string parameters="Spring-M1="+to_string(M1)+"-m1="+to_string(m1)+"-Ns="+to_string(numsam)+"-s="+to_string(s)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
+    string parameters="Spring-M1="+to_string(M1)+"-m1="+to_string(m1)+"-Ns="+to_string(numsam)+"-a="+to_string(a)+"-c="+to_string(c)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     string information=path+"/parameters_used.txt";
     file.open(information,ios_base::out);
     file << parameters;
