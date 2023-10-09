@@ -41,8 +41,8 @@ using namespace std;
 /////////////////////////////////
 // Double well
 /////////////////////////////////
-#define a .15 // parameter of how steep the double well is 
-#define c 1.35 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+#define a 1. // parameter of how steep the double well is 
+#define c 1.3 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
 
 double U(double x){
     return ((x+a)*(x+a)-0.0001)*pow((x-c),4);

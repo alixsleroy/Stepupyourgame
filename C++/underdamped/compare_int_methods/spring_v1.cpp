@@ -102,7 +102,7 @@ vector<double> one_step_tr(double dt, double numruns, int i)
 
     // Initialise snapshot
     nsp=0;
-    #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1,g_av) shared(ns,vec_q,vec_p,vec_g,moments,nsp)
+    #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1,g_av,gp) shared(ns,vec_q,vec_p,vec_g,moments,nsp)
     #pragma omp for
     for(ns = 0; ns<numsam; ns++){
         // Normal generator 

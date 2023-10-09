@@ -30,10 +30,9 @@ using namespace std::chrono;
  
 using namespace std;
 
-// #define m               0.005           // minimum step scale factor
-// #define M               1.1              // maximum step scale factor
-#define m1              0.01          // minimum step scale factor
-#define M1              1./1.2     
+#define m1              0.1          // minimum step scale factor
+#define M1              1./2. 
+#define low             10           // how low the adaptive function goes in between the well  
 #define numsam          100000           // number of sample
 #define T               100       // final time of all simulations 
 #define tau             0.1  
@@ -45,8 +44,8 @@ vector<double> dtlist = {0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0
 /////////////////////////////////
 // Double well
 /////////////////////////////////
-#define a .15 // parameter of how steep the double well is 
-#define c 1.35 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+#define a 1. // parameter of how steep the double well is 
+#define c 0.6 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
 
 double U(double x){
     return ((x+a)*(x+a)-0.0001)*pow((x-c),4);
@@ -87,10 +86,11 @@ double Up(double x){
 //g depends on (x-c)^32(x+a)^2
 ///////////////////////////////////
 
+
 double getg(double x)
 {
     double f,f2,xi,den,g;
-    f=pow(x-c,3)*2*pow(x+a,2);
+    f=pow(x-c,3)*2*pow(x+a,2)*low;
     f2=f*f;
     xi=sqrt(1+m1*f2);
     den=M1*xi+abs(f);
@@ -101,9 +101,9 @@ double getg(double x)
 double getgprime(double x)
 {
     double xc,xa,f,f2,xi,fp,gp;
-    f=pow(x-c,3)*2*pow(x+a,2);
+    f=low*pow(x-c,3)*2*pow(x+a,2);
     f2=f*f;
-    fp=(x+a)*pow(x-c,2)*(3*a-2*c+5*x)*2;
+    fp=low*(x+a)*pow(x-c,2)*(3*a-2*c+5*x)*2;
     xi=sqrt(1+m1*f2);
     gp=-f*fp/(sqrt(f2)*xi*pow(M1*xi+abs(f),2));
     return(gp);

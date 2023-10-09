@@ -42,31 +42,34 @@ using namespace std;
 // # include "normal.h"
 
 using namespace std;
-#define m1              0.1          // minimum step scale factor
+#define m1              0.001          // minimum step scale factor
 #define M1              1./1.5              // maximum step scale factor
 #define numsam          5          // number of sample
 #define T               50         // total number of trajectories
-#define dt              0.01
+#define dt              0.001
 
 #define tau             0.1            
 #define numruns         T/dt         // total number of trajectories
-#define gamma           0.1            // friction coefficient
-
-
+#define gamma           1.            // friction coefficient
+#define PATH        "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/fewtraj2d";
 
 /////////////////////////////////
-// Anisotropic 1 d definition //
+// Square potential definition //
 /////////////////////////////////
-// Spring potential
-//parameters of the potential 
+#define s 5.
+#define c 0.4
+// vector<double> dtlist ={0.01}; //  , 0.14 , 0.195, 0.273, 0.38 , 0.531, 0.741, 1.034, 1.443, 2.014};
 
 
 
-//////////////////
-// Anisotropic  //
-////////////////// 
-#define s 10. // parameter of how steep the double well is 
-#define c .5 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+double U(double x,double y)
+{
+    double res=(x*x+y*y);
+    return res;
+}
+
+//g depends on 1/((x-1)^2(x+1)^2x^2)
+///////////////////////////////////
 
 
 double Upx(double x,double y)
@@ -81,53 +84,11 @@ double Upy(double x,double y)
     return res;
 }
 
-//g depends on 1/((x^2+y^2-1)^2)
-///////////////////////////////////
-
-
-
-// double getg(double x, double y)
-// {
-//     double xc,xa,f,f2,xi,den,g;
-//     f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1));
-//     f2=f*f;
-//     xi=sqrt(1+m1*f2);
-//     den=M1*xi+f;
-//     g=xi/den;
-//     return(g);
-// }
-
-
-// double getgprime_x(double x,double y)
-// {
-//     double xc,xa,f,f2,xi,fp,gp;
-//     f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1));
-//     f2=f*f;
-//     fp=c*s*4*(x*x+y*y-1)*x;
-//     xi=sqrt(1+m1*f2);
-//     gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
-//     return(gp);
-//     }
-
-// double getgprime_y(double x,double y)
-// {
-//     double xc,xa,f,f2,xi,fp,gp;
-//     f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1));
-//     f2=f*f;
-//     fp=c*s*4*(x*x+y*y-1)*y;
-//     xi=sqrt(1+m1*f2);
-//     gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
-//     return(gp);
-//     }
-
-
-//g depends on 1/((x^2+y^2-1)^2)
-///////////////////////////////////
 
 double getg(double x, double y)
 {
     double xc,xa,f,f2,xi,den,g;
-    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1)*(x*x+y*y));
+    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1));
     f2=f*f;
     xi=sqrt(1+m1*f2);
     den=M1*xi+f;
@@ -139,9 +100,9 @@ double getg(double x, double y)
 double getgprime_x(double x,double y)
 {
     double xc,xa,f,f2,xi,fp,gp;
-    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1)*(x*x+y*y));
+    f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1));
     f2=f*f;
-    fp=c*s*4*(x*x+y*y-1)*(3*x*x+3*y*y-1)*x;
+    fp=c*s*4*(x*x+y*y-1)*x;
     xi=sqrt(1+m1*f2);
     gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
     return(gp);
@@ -152,15 +113,14 @@ double getgprime_y(double x,double y)
     double xc,xa,f,f2,xi,fp,gp;
     f=abs(c*s*(x*x+y*y-1)*(x*x+y*y-1));
     f2=f*f;
-    fp=c*s*4*(x*x+y*y-1)*(3*x*x+3*y*y-1)*y;
+    fp=c*s*4*(x*x+y*y-1)*y;
     xi=sqrt(1+m1*f2);
     gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
     return(gp);
     }
 
 
-
-/////////////////////////////////
+/////////////////
 // Non adaptive one step function //
 /////////////////////////////////
 
@@ -192,13 +152,18 @@ int one_step(void)
         //       normal_distribution<double>{0.0, 1.0 },                                                     
         //       normal_distribution<double>{0.0, 1.0 } };
 
-        qx = 0.5;
-        px = 0.;
-        qy = 0.5;
-        py = 0.;
+        // X coordinates
+        qx = 1.;
+        px = 1.;
 
-        fx = -Upx(qx,qy);
-        fy = -Upy(qx,qy);    
+        // Y coordinates
+        qy = 1.;
+        py = 1.;
+
+        // Values of dU/dx and dU/dy
+        fx = -Upx(qx,qy);  
+        fy = -Upy(qx,qy);  
+
 
         for(nt = 0; nt<numruns; nt++)
         {
@@ -209,41 +174,45 @@ int one_step(void)
             //**********
             //* STEP B *
             //**********
-            px+= 0.5*dt*fx;
-            py+= 0.5*dt*fy;
-         
+            // -X coordinates
+            px += 0.5*dt*fx;
+            // -Y coordinates
+            py += 0.5*dt*fy;
 
             //**********
             //* STEP A *
             //**********
+            // -X coordinates
             qx += 0.5*dt*px;
+            // -Y coordinates
             qy += 0.5*dt*py;
+
 
             //**********
             //* STEP O *
             //**********
-        
-            // dwx=dw(generator);
-            // dw=dw(generator);
-            // cout<<dwx<<"\n";
-            // cout<<dwy<<"\n";
-
             C = exp(-dt*gamma);
+            // -X coordinates
             px = C*px + sqrt((1.-C*C)*tau)*normal(generator);
+            // -Y coordinates
             py = C*py + sqrt((1.-C*C)*tau)*normal(generator);
 
             //**********
             //* STEP A *
             //**********
+            // -X coordinates
             qx += 0.5*dt*px;
+            // -Y coordinates
             qy += 0.5*dt*py;
 
             //**********
             //* STEP B *
             //**********
+            // -X coordinates
             fx = -Upx(qx,qy);
-            fy = -Upy(qx,qy);
             px += 0.5*dt*fx;
+            // -Y coordinates
+            fy = -Upy(qx,qy);
             py += 0.5*dt*fy;
 
             
@@ -256,7 +225,7 @@ int one_step(void)
 
 fstream file;
 string file_name;
-string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/fewtraj2d";
+string path=PATH;
 for(int nsps = 0; nsps<numsam; nsps++){
     file_name=path+"/vec_noada_x"+to_string(nsps)+".txt";
     file.open(file_name,ios_base::out);
@@ -287,7 +256,7 @@ int one_step_tr(void)
     // ******** Try Boost
     random_device rd1;
     boost::random::mt19937 gen(rd1());
-    double qx,px,fx,g,gpx,gdt,C;
+    double qx,px,fx,g,gpx,gdt,C,g0,g1;
     double qy,py,fy,gpy;
     int ns,nt;
 
@@ -307,65 +276,103 @@ int one_step_tr(void)
         mt19937 generator(rd1());
         normal_distribution<double> normal(0, 1);
 
+        // X- coordinates 
+        qx =1.;
+        px = 1.;
+
+        // Y- coordinates 
+        qy = 1.;
+        py = 1.;
+
+        // 
+        gpx=getgprime_x(qx,qy);
+        gpy=getgprime_y(qx,qy);
+
+        fx = -Upx(qx,qy);   // force
+        fy = -Upy(qx,qy);   // force
+
+        // g_av=0.;
         g = getg(qx,qy);
-        gdt = g*dt; 
-
-        qx = 0.5;
-        px = 0.;
-        fx = -Upx(qx,qy);   
-        gpx = getgprime_x(qx,qy); 
-
-        qy = 0.5;
-        py = 0.;
-        fy = -Upy(qx,qy);   
-        gpy = getgprime_y(qx,qy); 
-
+        gdt = dt*g;
 
         for(nt = 0; nt<numruns; nt++)
         {
 
-            //
+                      //
             // BAOAB integrator
             //
+
             //**********
             //* STEP B *
             //**********
-            px += 0.5*gdt*fx+0.5*dt*tau*gpx;
-            py += 0.5*gdt*fy+0.5*dt*tau*gpy;
+            // X- coordinates 
+            px += 0.5*gdt*fx;
+            // Y- coordinates 
+            py += 0.5*gdt*fy;
 
 
             //**********
             //* STEP A *
             //**********
+            // fixed point iteration
+            g0=getg(qx+dt/4*px*g,qy+dt/4*py*g);
+            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
+            g0=getg(qx+dt/4*px*g1,qy+dt/4*py*g1);
+            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
+            gdt=g1*dt;
+            
+            // X- coordinates 
             qx += 0.5*gdt*px;
+            // Y- coordinates 
             qy += 0.5*gdt*py;
 
             //**********
             //* STEP O *
             //**********
+            g = getg(qx,qy);
+            gdt = dt*g;
             C = exp(-gdt*gamma);
-            px = C*px + sqrt((1.-C*C)*tau)*normal(generator);
-            py = C*py + sqrt((1.-C*C)*tau)*normal(generator);
+            gpx=getgprime_x(qx,qy);
+            gpy=getgprime_y(qx,qy);
+            // X- coordinates 
+            px = C*px+(1.-C)*tau*gpx/(gamma*g) + sqrt((1.-C*C)*tau/gamma)*normal(generator);
+             // Y- coordinates 
+            py = C*py+(1.-C)*tau*gpy/(gamma*g) + sqrt((1.-C*C)*tau/gamma)*normal(generator);
 
             //**********
             //* STEP A *
             //**********
+            // fixed point iteration
+            g0=getg(qx+dt/4*px*g,qy+dt/4*py*g);
+            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
+            g0=getg(qx+dt/4*px*g1,qy+dt/4*py*g1);
+            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
+            gdt=g1*dt;
+            
+            // X- coordinates 
             qx += 0.5*gdt*px;
+            // Y- coordinates 
             qy += 0.5*gdt*py;
 
             //**********
             //* STEP B *
             //**********
-            fx = -Upx(qx,qy);
-            fy = -Upy(qx,qy);
-
+            // X- coordinates 
+            fx = -Upx(qx,qy);   // force
+            fy = -Upy(qx,qy);   // force           
             g = getg(qx,qy);
-
             gdt = dt*g;
-            gpx=getgprime_x(qx,qy);
-            gpy=getgprime_y(qx,qy);
-            px += 0.5*gdt*fx+0.5*dt*tau*gpx;
-            py += 0.5*gdt*fy+0.5*dt*tau*gpy;
+
+            // X- coordinates 
+            px += 0.5*gdt*fx;
+            // Y- coordinates 
+            py += 0.5*gdt*fy;
+
+
+            //* Save values of g
+            // g_av+=g;
+            // cout<<"\ng\n";
+            // cout<<g;
 
             // save the value every %nsnapshot value
             vec_qx[ns][nt]=qx;
@@ -381,7 +388,7 @@ int one_step_tr(void)
 
 fstream file;
 string file_name;
-string path="/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/fewtraj2d";
+string path=PATH;
 for(int nsps = 0; nsps<numsam; nsps++){
     file_name=path+"/vec_tr_x"+to_string(nsps)+".txt";
     file.open(file_name,ios_base::out);
