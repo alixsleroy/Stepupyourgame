@@ -145,7 +145,7 @@ vector<double> one_step_tr(double dt, double numruns, int i)
             g = getg(q);
             gdt = dt*g;
             C = exp(-gdt*gamma);
-            p = C*p + sqrt((1.-C*C)*tau)*normal(generator);
+            p = C*p +sqrt((1.-C*C)*tau)*normal(generator);
 
             //**********
             //* STEP A *

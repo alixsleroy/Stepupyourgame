@@ -261,7 +261,7 @@ vector<double> one_step_tr(double dt, double numruns, int i)
             gdt = dt*g;
             C = exp(-gdt*gamma);
             gp=getgprime(q);
-            p = C*p+(1.-C)*tau*gp/(gamma*g) + sqrt((1.-C*C)*tau/gamma)*normal(generator);
+            p = C*p+(1.-C)*tau*gp/(gamma*g) + sqrt((1.-C*C)*tau)*normal(generator);
 
             //**********
             //* STEP A *
