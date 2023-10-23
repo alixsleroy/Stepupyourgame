@@ -44,81 +44,93 @@ using namespace std;
 using namespace std;
 #define m1              0.001          // minimum step scale factor
 #define M1              1./1.2              // maximum step scale factor
-#define numsam          5          // number of sample
-#define T               100         // total number of trajectories
-#define dt              0.01
-#define tau             .1            
+#define numsam          1          // number of sample
+#define T               10000         // total number of trajectories
+#define dt              0.0001
+#define tau             .4            
+
 #define numruns         T/dt         // total number of trajectories
-#define gamma           1.            // friction coefficient
+#define gamma           .1            // friction coefficient
+#define printskip       50
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/fewtraj_ani_mod"
 /////////////////////////////////
 // Square potential definition q//
 /////////////////////////////////
-#define k1 0.1
-#define k2 10
-
+#define k1 5
+#define k2 0.2
+#define s 10
 
 double getp1(double x, double y){
-    return pow(y-x*x+4,2);
+    return pow(y-x*x+4.,2.);
 }
 double getp2(double x, double y){
-    return pow(y+x*x-4,2);
+    return pow(y+x*x-4.,2.);
 }
 double getp1_x(double x, double y){
-    return -4*x*(y-x*x+4);
+    return -4.*x*(y-x*x+4.);
 }
 double getp1_y(double x, double y){
-    return 2*(y-x*x+4);
+    return 2.*(y-x*x+4.);
 }
 double getp2_x(double x, double y){
-    return 4*x*(y+x*x-4);
+    return 4.*x*(y+x*x-4.);
 }
 double getp2_y(double x, double y){
-    return 2*(y+x*x-4);
+    return 2.*(y+x*x-4.);
 }
 
 double U(double x, double y){
     double p1=getp1(x,y);
     double p2=getp2(x,y);
-    double res=(1+k1*p1*p2)/(1+p1)+(k2*p1*p2)/(1+k2*p2);
+    double res=(1.+k1*p1*p2)/(1.+p1)+(k2*p1*p2)/(1.+k2*p2);
     return (res);
 }
 
 double Upx(double x, double y){
-    double p1=getp1(x,y);
-    double p2=getp1(x,y);
-    double p1_p=getp1_x(x,y);
-    double p2_p=getp2_x(x,y);
-    double q1_p= (p1_p*(k1*p2-1)+k1*p1*(1+p1)*p2_p)/pow(1+p1,2);
-    double q2_p = k2*(k2*p1_p*p2*p2+p1_p*p2+p1*p2_p)/pow(1+k2*p2,2);
-    return q1_p+q2_p;
+    // double p1=getp1(x,y);
+    // double p2=getp1(x,y);
+    // double p1_p=getp1_x(x,y);
+    // double p2_p=getp2_x(x,y);
+    // //double q1_p= (p1_p*(k1*p2-1.)+k1*p1*(1.+p1)*p2_p)/pow(1.+k1*p1,2);
+    // double q1_p= (k1*(p1_p*p2+p1*p2_p+k1*p1*(p1*p2_p-1.)))/pow(1.+k1*p1,2.);
+
+    // // double q2_p = k2*(k2*p1_p*p2*p2+p1_p*p2+p1*p2_p)/pow(1.+k2*p2,2.);
+    // double q2_p= (k2*(p2_p*p1+p2*p1_p+k2*p2*(p2*p1_p-1.)))/pow(1.+k2*p2,2.);
+    double res=4*x*s*(x*x+y*y-1)+4*x*(x*x+y*y-2);
+
+    return res; //+q2_p;
 }
 
 double Upy(double x, double y){
-    double p1=getp1(x,y);
-    double p2=getp1(x,y);
-    double p1_p=getp1_y(x,y);
-    double p2_p=getp2_y(x,y);
-    double q1_p= (p1_p*(k1*p2-1)+k1*p1*p2_p*(1+p1))/pow(1+p1,2);
-    double q2_p = k2*(k2*p1_p*p2*p2+p1_p*p2+p1*p2_p)/pow(1+k2*p2,2);
-    return q1_p+q2_p;
+    // double p1=getp1(x,y);
+    // double p2=getp1(x,y);
+    // double p1_p=getp1_y(x,y);
+    // double p2_p=getp2_y(x,y);
+    // //double q1_p= (p1_p*(k1*p2-1.)+k1*p1*(1.+p1)*p2_p)/pow(1.+k1*p1,2);
+    // double q1_p= (k1*(p1_p*p2+p1*p2_p+k1*p1*(p1*p2_p-1.)))/pow(1.+k1*p1,2.);
+
+    // //double q2_p = (k2*p1_p*p2*(1.+k2*p2)+k2*p1*p2_p)/pow(1.+k2*p2,2.);
+    // double q2_p= (k2*(p2_p*p1+p2*p1_p+k2*p2*(p2*p1_p-1.)))/pow(1.+k2*p2,2.);
+    double res=4*y*s*(x*x+y*y-1);
+
+    return res; //q1_p+q2_p;
 }
 
 double getg(double x, double y)
 {
-    return(1);
+    return(1.);
 }
 
 
 double getgprime_x(double x,double y)
 {
 
-    return(0);
+    return(0.);
     }
 
 double getgprime_y(double x,double y)
 {
-    return(0);
+    return(0.);
     }
 
 /////////////////
@@ -131,10 +143,10 @@ int one_step(void)
     // ******** Try Boost
     random_device rd1;
     boost::random::mt19937 gen(rd1());
-    double qx,px,gpx,C,fx,dwx;
+    double qx,px,gpx,C,fx,dwx,j;
     double qy,py,gpy,fy,dwy;
     
-    vector<double> q_list(numruns,0);
+    vector<double> q_list(int(numruns/printskip),0);
     vector<vector<double>> vec_qx(numsam,q_list);
     vector<vector<double>> vec_px(numsam,q_list);
     vector<vector<double>> vec_qy(numsam,q_list);
@@ -154,18 +166,18 @@ int one_step(void)
         //       normal_distribution<double>{0.0, 1.0 } };
 
         // X coordinates
-        qx = -1.;
+        qx = -2.;
         px = 1.;
 
         // Y coordinates
-        qy = -1.;
+        qy = 0.;
         py = 1.;
 
         // Values of dU/dx and dU/dy
         fx = -Upx(qx,qy);  
         fy = -Upy(qx,qy);  
 
-
+        j=0;
         for(nt = 0; nt<numruns; nt++)
         {
             //
@@ -216,11 +228,14 @@ int one_step(void)
             fy = -Upy(qx,qy);
             py += 0.5*dt*fy;
 
-            
-            vec_qx[ns][nt]=qx;
-            vec_px[ns][nt]=px;
-            vec_qy[ns][nt]=qy;
-            vec_py[ns][nt]=py;
+            // To do later 
+            if (nt%printskip==0){
+            vec_qx[ns][j]=qx;
+            vec_px[ns][j]=px;
+            vec_qy[ns][j]=qy;
+            vec_py[ns][j]=py;
+            j=j+1;
+            }
         }
     }
 
@@ -278,11 +293,11 @@ int one_step_tr(void)
         normal_distribution<double> normal(0, 1);
 
         // X- coordinates 
-        qx =-1.;
+        qx =0.;
         px = 1.;
 
         // Y- coordinates 
-        qy = -1.;
+        qy = 2.;
         py = 1.;
 
         // 
@@ -426,8 +441,8 @@ int main(void) {
     //Non adaptive step 
     int out= one_step();
 
-    //Transformed step 
-    out= one_step_tr();
+    // //Transformed step 
+    // out= one_step_tr();
 
 return 0;
 }
