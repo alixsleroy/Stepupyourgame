@@ -45,75 +45,111 @@ using namespace std;
 #define m1              0.001          // minimum step scale factor
 #define M1              1./1.2              // maximum step scale factor
 #define numsam          1          // number of sample
-#define T               10000         // total number of trajectories
-#define dt              0.0001
+#define T               100000         // total number of trajectories
+#define dt              0.005
 #define tau             .4            
 
 #define numruns         T/dt         // total number of trajectories
-#define gamma           .1            // friction coefficient
+#define gamma           1.            // friction coefficient
 #define printskip       50
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/fewtraj_ani_mod"
-/////////////////////////////////
-// Square potential definition q//
-/////////////////////////////////
-#define k1 5
-#define k2 0.2
-#define s 10
+// /////////////////////////////////
+// // Square potential definition q//
+// /////////////////////////////////
+// #define k1 0.2
+// #define k2 0.2
+// #define s 10
 
-double getp1(double x, double y){
-    return pow(y-x*x+4.,2.);
-}
-double getp2(double x, double y){
-    return pow(y+x*x-4.,2.);
-}
-double getp1_x(double x, double y){
-    return -4.*x*(y-x*x+4.);
-}
-double getp1_y(double x, double y){
-    return 2.*(y-x*x+4.);
-}
-double getp2_x(double x, double y){
-    return 4.*x*(y+x*x-4.);
-}
-double getp2_y(double x, double y){
-    return 2.*(y+x*x-4.);
-}
+// double getp1(double x, double y){
+//     return pow(y-x*x+4.,2.);
+// }
+// double getp2(double x, double y){
+//     return pow(y+x*x-4.,2.);
+// }
+// double getp1_x(double x, double y){
+//     return -4.*x*(y-x*x+4.);
+// }
+// double getp1_y(double x, double y){
+//     return 2.*(y-x*x+4.);
+// }
+// double getp2_x(double x, double y){
+//     return 4.*x*(y+x*x-4.);
+// }
+// double getp2_y(double x, double y){
+//     return 2.*(y+x*x-4.);
+// }
 
-double U(double x, double y){
-    double p1=getp1(x,y);
-    double p2=getp2(x,y);
-    double res=(1.+k1*p1*p2)/(1.+p1)+(k2*p1*p2)/(1.+k2*p2);
-    return (res);
-}
+// double U(double x, double y){
+//     double p1=getp1(x,y);
+//     double p2=getp2(x,y);
+//     double res=(1.+k1*p1*p2)/(1.+p1)+(k2*p1*p2)/(1.+k2*p2);
+//     return (res);
+// }
+
+// double Upx(double x, double y){
+//     double p1=getp1(x,y);
+//     double p2=getp1(x,y);
+//     double p1_p=getp1_x(x,y);
+//     double p2_p=getp2_x(x,y);
+//     //double q1_p= (p1_p*(k1*p2-1.)+k1*p1*(1.+p1)*p2_p)/pow(1.+k1*p1,2);
+//     double q1_p= (k1*(p1_p*p2+p1*p2_p+k1*p1*(p1*p2_p-1.)))/pow(1.+k1*p1,2.);
+//     // double q2_p = k2*(k2*p1_p*p2*p2+p1_p*p2+p1*p2_p)/pow(1.+k2*p2,2.);
+//     double q2_p= (k2*(p2_p*p1+p2*p1_p+k2*p2*(p2*p1_p-1.)))/pow(1.+k2*p2,2.);
+//     return q1_p+q2_p;
+// }
+
+// double Upy(double x, double y){
+//     double p1=getp1(x,y);
+//     double p2=getp1(x,y);
+//     double p1_p=getp1_y(x,y);
+//     double p2_p=getp2_y(x,y);
+//     //double q1_p= (p1_p*(k1*p2-1.)+k1*p1*(1.+p1)*p2_p)/pow(1.+k1*p1,2);
+//     double q1_p= (k1*(p1_p*p2+p1*p2_p+k1*p1*(p1*p2_p-1.)))/pow(1.+k1*p1,2.);
+//     //double q2_p = (k2*p1_p*p2*(1.+k2*p2)+k2*p1*p2_p)/pow(1.+k2*p2,2.);
+//     double q2_p= (k2*(p2_p*p1+p2*p1_p+k2*p2*(p2*p1_p-1.)))/pow(1.+k2*p2,2.);
+//     return q1_p+q2_p;
+// }
+
+
+/// Variable step size method 
+/////////////////////////////
+
 
 double Upx(double x, double y){
-    // double p1=getp1(x,y);
-    // double p2=getp1(x,y);
-    // double p1_p=getp1_x(x,y);
-    // double p2_p=getp2_x(x,y);
-    // //double q1_p= (p1_p*(k1*p2-1.)+k1*p1*(1.+p1)*p2_p)/pow(1.+k1*p1,2);
-    // double q1_p= (k1*(p1_p*p2+p1*p2_p+k1*p1*(p1*p2_p-1.)))/pow(1.+k1*p1,2.);
-
-    // // double q2_p = k2*(k2*p1_p*p2*p2+p1_p*p2+p1*p2_p)/pow(1.+k2*p2,2.);
-    // double q2_p= (k2*(p2_p*p1+p2*p1_p+k2*p2*(p2*p1_p-1.)))/pow(1.+k2*p2,2.);
-    double res=4*x*s*(x*x+y*y-1)+4*x*(x*x+y*y-2);
-
-    return res; //+q2_p;
+    double k1 = 10.;
+    double k2 = 100.;
+    double k3 =.5;
+    double k4 = 0.1;
+    double x2,x3,x4,y2,p1,p2,p1x,p1y,p2x,p2y,f1;
+    x2 =x*x; x3 = x*x2; x4 = x*x3; y2 = y*y;
+    p1=pow(y-x2+4,2);
+    p2=pow(y+x2-4,2);
+    p1x = -2*(y-x2+4)*2*x;
+    p1y = 2*(y-x2+4);
+    p2x = +2*(y+x2-4)*2*x;
+    p2y = 2*(y+x2-4);
+    f1  = -((1+k1*p1)*(p1x*p2 + p1*p2x)-p1*p2*k1*p1x)/pow(1+k1*p1,2);
+    f1  =f1- k3* ((1+k2*p2)*(p1x*p2 + p1*p2x)-p1*p2*k2*p2x)/pow(1+k2*p2,2);
+    f1  =f1- 2*k4*x;
+    return f1;
 }
 
 double Upy(double x, double y){
-    // double p1=getp1(x,y);
-    // double p2=getp1(x,y);
-    // double p1_p=getp1_y(x,y);
-    // double p2_p=getp2_y(x,y);
-    // //double q1_p= (p1_p*(k1*p2-1.)+k1*p1*(1.+p1)*p2_p)/pow(1.+k1*p1,2);
-    // double q1_p= (k1*(p1_p*p2+p1*p2_p+k1*p1*(p1*p2_p-1.)))/pow(1.+k1*p1,2.);
-
-    // //double q2_p = (k2*p1_p*p2*(1.+k2*p2)+k2*p1*p2_p)/pow(1.+k2*p2,2.);
-    // double q2_p= (k2*(p2_p*p1+p2*p1_p+k2*p2*(p2*p1_p-1.)))/pow(1.+k2*p2,2.);
-    double res=4*y*s*(x*x+y*y-1);
-
-    return res; //q1_p+q2_p;
+    double k1 = 10.;
+    double k2 = 100.;
+    double k3 =.5;
+    double k4 = 0.1;
+    double x2,x3,x4,y2,p1,p2,p1x,p1y,p2x,p2y,f1,f2;
+    x2 =x*x; x3 = x*x2; x4 = x*x3; y2 = y*y;
+    p1=pow(y-x2+4,2);
+    p2=pow(y+x2-4,2);
+    p1x = -2*(y-x2+4)*2*x;
+    p1y = 2*(y-x2+4);
+    p2x = +2*(y+x2-4)*2*x;
+    p2y = 2*(y+x2-4);
+    f2  = -((1+k1*p1)*(p1y*p2 + p1*p2y)-p1*p2*k1*p1y)/pow(1+k1*p1,2);
+    f2  =f2- k3* ((1+k2*p2)*(p1y*p2 + p1*p2y)-p1*p2*k2*p2y)/pow(1+k2*p2,2);
+    return f2;
 }
 
 double getg(double x, double y)
@@ -166,11 +202,11 @@ int one_step(void)
         //       normal_distribution<double>{0.0, 1.0 } };
 
         // X coordinates
-        qx = -2.;
+        qx = -3.;
         px = 1.;
 
         // Y coordinates
-        qy = 0.;
+        qy = -0.5;
         py = 1.;
 
         // Values of dU/dx and dU/dy
@@ -293,11 +329,11 @@ int one_step_tr(void)
         normal_distribution<double> normal(0, 1);
 
         // X- coordinates 
-        qx =0.;
+        qx =-3.;
         px = 1.;
 
         // Y- coordinates 
-        qy = 2.;
+        qy = -0.5;
         py = 1.;
 
         // 

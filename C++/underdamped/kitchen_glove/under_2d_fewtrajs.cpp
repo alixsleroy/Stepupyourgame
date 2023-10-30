@@ -45,16 +45,15 @@ using namespace std;
 #define m1              0.001          // minimum step scale factor
 #define M1              1./1.2              // maximum step scale factor
 #define numsam          1          // number of sample
-#define T               1000         // total number of trajectories
-#define dt              0.01
+#define T               10000         // total number of trajectories
+#define dt              0.05
 #define tau             .1
-
 #define numruns         T/dt         // total number of trajectories
 #define gamma           1.            // friction coefficient
 
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/fewtraj_kitchen"
-#define d 10
-#define b 5
+#define d 15
+#define b 0.1
 double Upx(double x, double y){
     double f1=d*x*x+0.01*(y-1)*(y-1);
     double f2=((x-1)*(x-1)+b*y*y);
@@ -398,7 +397,7 @@ int main(void) {
     int out= one_step();
 
     //Transformed step 
-    out= one_step_tr();
+  //  out= one_step_tr();
 
 return 0;
 }
