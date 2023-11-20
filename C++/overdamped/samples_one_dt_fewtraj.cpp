@@ -26,31 +26,31 @@
 
 using namespace std;
 #define m1              0.1          // minimum step scale factor
-#define M1              1./2. 
+#define M1              1./10. 
 #define low             10           // how low the adaptive function goes in between the well
-#define numsam          10           // number of sample
-#define numruns         100000
+#define numsam          5           // number of sample
+#define numruns         1000
 #define ds              0.01
 #define T               100       // final time of all simulations 
 #define tau             0.1  
 #define printskip       10
-#define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_dw_fewtraj";
+#define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_ani";
 
-/////////////////////////////////
-// Double well
-/////////////////////////////////
-#define a 1. // parameter of how steep the double well is 
-#define c .6 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+// /////////////////////////////////
+// // Double well
+// /////////////////////////////////
+// #define a 1. // parameter of how steep the double well is 
+// #define c .6 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
 
-double U(double x){
-    return ((x+a)*(x+a)-0.0001)*pow((x-c),4);
-    }
+// double U(double x){
+//     return ((x+a)*(x+a)-0.0001)*pow((x-c),4);
+//     }
 
-double Up(double x){
-    double xc =x-c;
-    double xa=x+a;
-    double v=2*xc*xc*xc*(xa*xc+2*xa*xa-0.0002);
-    return v;}
+// double Up(double x){
+//     double xc =x-c;
+//     double xa=x+a;
+//     double v=2*xc*xc*xc*(xa*xc+2*xa*xa-0.0002);
+//     return v;}
 
 
 // //g depends on (x-c)^3
@@ -78,56 +78,16 @@ double Up(double x){
 //     return(gp);
 //     }
 
-//g depends on (x-c)^32(x+a)^2
-///////////////////////////////////
-
-double getg(double x)
-{
-    double f,f2,xi,den,g;
-    f=pow(x-c,3)*2*pow(x+a,2)*low;
-    f2=f*f;
-    xi=sqrt(1+m1*f2);
-    den=M1*xi+abs(f);
-    g=xi/den;
-    return(g);
-}
-
-double getgprime(double x)
-{
-    double xc,xa,f,f2,xi,fp,gp;
-    f=low*pow(x-c,3)*2*pow(x+a,2);
-    f2=f*f;
-    fp=low*(x+a)*pow(x-c,2)*(3*a-2*c+5*x)*2;
-    xi=sqrt(1+m1*f2);
-    gp=-f*fp/(sqrt(f2)*xi*pow(M1*xi+abs(f),2));
-    return(gp);
-    }
-
-
-/////////////////////////////////
-// Anisotropic
-/////////////////////////////////
-// #define s 20. // parameter of how steep the double well is 
-// #define c 0.05 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
-
-// double Up(double x)
-// {
-//     double res=4*s*x*(x*x-1); //-3*x*x;
-//     return res;
-// }
-
-// //g depends on 1/((x-c)^3)
+// //g depends on (x-c)^32(x+a)^2
 // ///////////////////////////////////
 
 // double getg(double x)
 // {
-//     double xc,xa,f,f2,xi,den,g;
-//     xc=x-1;
-//     xa=x+1;
-//     f=abs(c*s*xa*xa*xc*xc);
+//     double f,f2,xi,den,g;
+//     f=pow(x-c,3)*2*pow(x+a,2)*low;
 //     f2=f*f;
 //     xi=sqrt(1+m1*f2);
-//     den=M1*xi+f;
+//     den=M1*xi+abs(f);
 //     g=xi/den;
 //     return(g);
 // }
@@ -135,15 +95,55 @@ double getgprime(double x)
 // double getgprime(double x)
 // {
 //     double xc,xa,f,f2,xi,fp,gp;
-//     xc=x-1;
-//     xa=x+1;
-//     f=c*s*xa*xa*xc*xc;
+//     f=low*pow(x-c,3)*2*pow(x+a,2);
 //     f2=f*f;
-//     fp=c*4*s*(x*x-1)*x;
+//     fp=low*(x+a)*pow(x-c,2)*(3*a-2*c+5*x)*2;
 //     xi=sqrt(1+m1*f2);
-//     gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+//     gp=-f*fp/(sqrt(f2)*xi*pow(M1*xi+abs(f),2));
 //     return(gp);
 //     }
+
+
+///////////////////////////////
+//Anisotropic
+///////////////////////////////
+#define s 2. // parameter of how steep the double well is 
+#define c 0.1 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
+
+double Up(double x)
+{
+    double res=4*s*x*(x*x-1); //-3*x*x;
+    return res;
+}
+
+//g depends on 1/((x-c)^3)
+///////////////////////////////////
+
+double getg(double x)
+{
+    double xc,xa,f,f2,xi,den,g;
+    xc=x-1;
+    xa=x+1;
+    f=abs(c*s*xa*xa*xc*xc);
+    f2=f*f;
+    xi=sqrt(1+m1*f2);
+    den=M1*xi+f;
+    g=xi/den;
+    return(g);
+}
+
+double getgprime(double x)
+{
+    double xc,xa,f,f2,xi,fp,gp;
+    xc=x-1;
+    xa=x+1;
+    f=c*s*xa*xa*xc*xc;
+    f2=f*f;
+    fp=c*4*s*(x*x-1)*x;
+    xi=sqrt(1+m1*f2);
+    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    return(gp);
+    }
 
 
 

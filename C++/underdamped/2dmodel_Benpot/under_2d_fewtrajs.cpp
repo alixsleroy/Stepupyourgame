@@ -42,95 +42,27 @@ using namespace std;
 // # include "normal.h"
 
 using namespace std;
-#define m               0.0001          // minimum step scale factor
-#define M               1.1              // maximum step scale factor
+#define m               0.9          // minimum step scale factor
+#define M               1.2             // maximum step scale factor
 #define numsam          1          // number of sample
-#define T               10000         // total number of trajectories
-#define dt              0.07
+#define T               100000         // total number of trajectories
+
+#define dt              0.025
 #define tau             .1            
 
-#define numruns         T/dt         // total number of trajectories
-#define gamma           1.            // friction coefficient
+#define numruns         int(T/dt)         // total number of trajectories
+#define gamma           .5            // friction coefficient
 #define printskip       1
 
-#define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/fewtraj_ani_mod"
+#define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/fewtraj_ani_mod/smalldt"
 #define k1              .1
 #define k2              50.
 #define k3              50.
-#define k4              .05
-// ///////////////////////////////////////
-// /// Bobsled Potential around x=4     //
-// ///////////////////////////////////////
+#define k4              .1
 
-
-// double Upx(double x, double y){
-
-//     double x2,x3,x4,y2,p1,p2,p1x,p1y,p2x,p2y,f1;
-//     x2 =x*x; x3 = x*x2; x4 = x*x3; y2 = y*y;
-//     p1=pow(y-x2+4,2);
-//     p2=pow(y+x2-4,2);
-//     p1x = -2*(y-x2+4)*2*x;
-//     p1y = 2*(y-x2+4);
-//     p2x = +2*(y+x2-4)*2*x;
-//     p2y = 2*(y+x2-4);
-//     f1  = ((1+k1*p1)*(p1x*p2 + p1*p2x)-p1*p2*k1*p1x)/pow(1+k1*p1,2);
-//     f1  =f1+ k3* ((1+k2*p2)*(p1x*p2 + p1*p2x)-p1*p2*k2*p2x)/pow(1+k2*p2,2);
-//     f1  =f1+ 2*k4*x;
-//     return f1;
-// }
-
-// double Upy(double x, double y){
-
-//     double x2,x3,x4,y2,p1,p2,p1x,p1y,p2x,p2y,f1,f2;
-//     x2 =x*x; x3 = x*x2; x4 = x*x3; y2 = y*y;
-//     p1=pow(y-x2+4,2);
-//     p2=pow(y+x2-4,2);
-//     p1x = -2*(y-x2+4)*2*x;
-//     p1y = 2*(y-x2+4);
-//     p2x = +2*(y+x2-4)*2*x;
-//     p2y = 2*(y+x2-4);
-//     f2  = +((1+k1*p1)*(p1y*p2 + p1*p2y)-p1*p2*k1*p1y)/pow(1+k1*p1,2);
-//     f2  =f2+k3* ((1+k2*p2)*(p1y*p2 + p1*p2y)-p1*p2*k2*p2y)/pow(1+k2*p2,2);
-//     return f2;
-// }
-
-// double getg(double x, double y)
-// {
-//     double f=((y+x*x-4)*(y+x*x-4));
-//     double f2=f*f;
-//     double xi=sqrt(m+f2);
-//     double den=1/xi+1/M;
-//     double g=1/den;
-//     return(g);
-// }
-
-
-// double getgprime_x(double x,double y)
-// {
-//     double f=((y+x*x-4)*(y+x*x-4));
-//     double fp=4*x*(y+x*x-1);
-//     double f2=f*f;
-//     double xi=sqrt(m+f2);
-//     double num=M*M*f*fp;
-//     double den=(xi+M)*(xi+M)*xi;
-//     double res=num/den;
-//     return(res);
-//     }
-
-// double getgprime_y(double x,double y)
-// {
-//     double f=((y+x*x-4)*(y+x*x-4));
-//     double fp=2*(y+x*x-4);
-//     double f2=f*f;
-//     double xi=sqrt(m+f2);
-//     double num=M*M*f*fp;
-//     double den=(xi+M)*(xi+M)*xi;
-//     double res=num/den;
-//     return(res);
-//     }
 
 ///////////////////////////////////////
-/// Bobsled Potential around x=1     //
+/// Bobsled Potential around x=4     //
 ///////////////////////////////////////
 
 
@@ -138,12 +70,12 @@ double Upx(double x, double y){
 
     double x2,x3,x4,y2,p1,p2,p1x,p1y,p2x,p2y,f1;
     x2 =x*x; x3 = x*x2; x4 = x*x3; y2 = y*y;
-    p1=pow(y-x2+1,2);
-    p2=pow(y+x2-1,2);
-    p1x = -2*(y-x2+1)*2*x;
-    p1y = 2*(y-x2+1);
-    p2x = +2*(y+x2-1)*2*x;
-    p2y = 2*(y+x2-1);
+    p1=pow(y-x2+4,2);
+    p2=pow(y+x2-4,2);
+    p1x = -2*(y-x2+4)*2*x;
+    p1y = 2*(y-x2+4);
+    p2x = +2*(y+x2-4)*2*x;
+    p2y = 2*(y+x2-4);
     f1  = ((1+k1*p1)*(p1x*p2 + p1*p2x)-p1*p2*k1*p1x)/pow(1+k1*p1,2);
     f1  =f1+ k3* ((1+k2*p2)*(p1x*p2 + p1*p2x)-p1*p2*k2*p2x)/pow(1+k2*p2,2);
     f1  =f1+ 2*k4*x;
@@ -154,12 +86,12 @@ double Upy(double x, double y){
 
     double x2,x3,x4,y2,p1,p2,p1x,p1y,p2x,p2y,f1,f2;
     x2 =x*x; x3 = x*x2; x4 = x*x3; y2 = y*y;
-    p1=pow(y-x2+1,2);
-    p2=pow(y+x2-1,2);
-    p1x = -2*(y-x2+1)*2*x;
-    p1y = 2*(y-x2+1);
-    p2x = +2*(y+x2-1)*2*x;
-    p2y = 2*(y+x2-1);
+    p1=pow(y-x2+4,2);
+    p2=pow(y+x2-4,2);
+    p1x = -2*(y-x2+4)*2*x;
+    p1y = 2*(y-x2+4);
+    p2x = +2*(y+x2-4)*2*x;
+    p2y = 2*(y+x2-4);
     f2  = +((1+k1*p1)*(p1y*p2 + p1*p2y)-p1*p2*k1*p1y)/pow(1+k1*p1,2);
     f2  =f2+k3* ((1+k2*p2)*(p1y*p2 + p1*p2y)-p1*p2*k2*p2y)/pow(1+k2*p2,2);
     return f2;
@@ -167,7 +99,7 @@ double Upy(double x, double y){
 
 double getg(double x, double y)
 {
-    double f=((y+x*x-1)*(y+x*x-1));
+    double f=((y+x*x-4)*(y+x*x-4));
     double f2=f*f;
     double xi=sqrt(m+f2);
     double den=1/xi+1/M;
@@ -178,7 +110,7 @@ double getg(double x, double y)
 
 double getgprime_x(double x,double y)
 {
-    double f=((y+x*x-1)*(y+x*x-1));
+    double f=((y+x*x-4)*(y+x*x-4));
     double fp=4*x*(y+x*x-1);
     double f2=f*f;
     double xi=sqrt(m+f2);
@@ -190,8 +122,8 @@ double getgprime_x(double x,double y)
 
 double getgprime_y(double x,double y)
 {
-    double f=((y+x*x-1)*(y+x*x-1));
-    double fp=2*(y+x*x-1);
+    double f=((y+x*x-4)*(y+x*x-4));
+    double fp=2*(y+x*x-4);
     double f2=f*f;
     double xi=sqrt(m+f2);
     double num=M*M*f*fp;
@@ -199,6 +131,77 @@ double getgprime_y(double x,double y)
     double res=num/den;
     return(res);
     }
+
+// ///////////////////////////////////////
+// /// Bobsled Potential around x=1     //
+// ///////////////////////////////////////
+
+
+// double Upx(double x, double y){
+
+//     double x2,x3,x4,y2,p1,p2,p1x,p1y,p2x,p2y,f1;
+//     x2 =x*x; x3 = x*x2; x4 = x*x3; y2 = y*y;
+//     p1=pow(y-x2+1,2);
+//     p2=pow(y+x2-1,2);
+//     p1x = -2*(y-x2+1)*2*x;
+//     p1y = 2*(y-x2+1);
+//     p2x = +2*(y+x2-1)*2*x;
+//     p2y = 2*(y+x2-1);
+//     f1  = ((1+k1*p1)*(p1x*p2 + p1*p2x)-p1*p2*k1*p1x)/pow(1+k1*p1,2);
+//     f1  =f1+ k3* ((1+k2*p2)*(p1x*p2 + p1*p2x)-p1*p2*k2*p2x)/pow(1+k2*p2,2);
+//     f1  =f1+ 2*k4*x;
+//     return f1;
+// }
+
+// double Upy(double x, double y){
+
+//     double x2,x3,x4,y2,p1,p2,p1x,p1y,p2x,p2y,f1,f2;
+//     x2 =x*x; x3 = x*x2; x4 = x*x3; y2 = y*y;
+//     p1=pow(y-x2+1,2);
+//     p2=pow(y+x2-1,2);
+//     p1x = -2*(y-x2+1)*2*x;
+//     p1y = 2*(y-x2+1);
+//     p2x = +2*(y+x2-1)*2*x;
+//     p2y = 2*(y+x2-1);
+//     f2  = +((1+k1*p1)*(p1y*p2 + p1*p2y)-p1*p2*k1*p1y)/pow(1+k1*p1,2);
+//     f2  =f2+k3* ((1+k2*p2)*(p1y*p2 + p1*p2y)-p1*p2*k2*p2y)/pow(1+k2*p2,2);
+//     return f2;
+// }
+
+// double getg(double x, double y)
+// {
+//     double f=((y+x*x-1)*(y+x*x-1));
+//     double f2=f*f;
+//     double xi=sqrt(m+f2);
+//     double den=1/xi+1/M;
+//     double g=1/den;
+//     return(g);
+// }
+
+
+// double getgprime_x(double x,double y)
+// {
+//     double f=((y+x*x-1)*(y+x*x-1));
+//     double fp=4*x*(y+x*x-1);
+//     double f2=f*f;
+//     double xi=sqrt(m+f2);
+//     double num=M*M*f*fp;
+//     double den=(xi+M)*(xi+M)*xi;
+//     double res=num/den;
+//     return(res);
+//     }
+
+// double getgprime_y(double x,double y)
+// {
+//     double f=((y+x*x-1)*(y+x*x-1));
+//     double fp=2*(y+x*x-1);
+//     double f2=f*f;
+//     double xi=sqrt(m+f2);
+//     double num=M*M*f*fp;
+//     double den=(xi+M)*(xi+M)*xi;
+//     double res=num/den;
+//     return(res);
+//     }
 
 /////////////////
 // Non adaptive one step function //
