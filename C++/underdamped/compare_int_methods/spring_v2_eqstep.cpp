@@ -37,50 +37,42 @@ using namespace std;
 #define printskip       10
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v2"
 
+vector<double> dtlist ={0.1  , 0.14 , 0.195, 0.273, 0.38 , 0.531, 0.741};
 
-/////////////////////////////////
-// Square potential definition //
-/////////////////////////////////
-//vector<double> dtlist ={exp(0.0025), exp(0.0048), exp(0.0094), exp(0.0183), exp(0.0357), exp(0.0695), exp(0.1353), exp(0.2636),exp(0.5134), exp(1.)};
-vector<double> dtlist ={0.1  , 0.14 , 0.195, 0.273, 0.38 , 0.531, 0.741, 1.034, 1.443, 2.014};
 
-// /////////////////////////////////
-// // Spring potential definition //
-// /////////////////////////////////
-// Spring potential 
-//parameters of the potential 
-#define a               2.75
-#define b               0.1
-#define x0              0.5
-#define c               0.1
+/////////////////////// DEFINE POTENTIAL //////////////////////////////
+#define r     0.1
+#define d     3
+#define m1    0.001
+#define M1    1/2.
 
-long double Up(double x)
+double Up(double x)
 {
-   long double xx02= (x-x0)*(x-x0);
-   long double wx =b/(b/a+xx02);
-    return (wx*wx+c)*x;
+    double res = x*x*x+d*cos(1+d*x);
+    return res;
 }
 
 double getg(double x)
 {
-    double wx,f,xi,g;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    xi = f+m;
-    g = 1/(1/M+1/sqrt(xi));
+    double f,f2,xi,den,g;
+    f=r*((cos(1+d*x))+x*x*x)*((cos(1+d*x))+x*x*x);
+    f2=f*f;
+    xi=sqrt(1+m1*f2);
+    den=M1*xi+sqrt(f2);
+    g=xi/den;
     return(g);
 
 }
 
 double getgprime(double x)
 {
-    double wx,f,fp,xi,gprime;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
-    xi=sqrt(f+m*m);
-    gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
-    return(gprime);
+    double f,f2,fp,xi,gp;
+    f=r*((cos(1+d*x))+x*x*x)*((cos(1+d*x))+x*x*x);
+    f2=f*f;
+    fp=r*2*(cos(1+d*x)+x*x*x)*(3*x*x-d*d*sin(1+d*x));
+    xi=sqrt(1+m1*f2);
+    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    return(gp);
 }
 
 

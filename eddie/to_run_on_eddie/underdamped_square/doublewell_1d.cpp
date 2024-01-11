@@ -33,8 +33,8 @@ using namespace std;
 // # include "normal.h"
 
 // #define DIVTERM          //define to use
-#define m1              1/1.09           // minimum step scale factor
-#define M1              1/1.5             // maximum step scale factor
+// #define m1              1/1.09           // minimum step scale factor
+// #define M1              1/1.5             // maximum step scale factor
 #define m               0.001
 #define M               1.5
 #define gamma           0.1            // friction coefficient
@@ -390,12 +390,12 @@ int main(void) {
         moments_4[i]=moments_di[3];
 
 
-        // // transformed 
-        // moments_di=one_step_tr(dti,ni,i);
-        // moments_tr_1[i]=moments_di[0];
-        // moments_tr_2[i]=moments_di[1];
-        // moments_tr_3[i]=moments_di[2];
-        // moments_tr_4[i]=moments_di[3];
+        // transformed 
+        moments_di=one_step_tr(dti,ni,i);
+        moments_tr_1[i]=moments_di[0];
+        moments_tr_2[i]=moments_di[1];
+        moments_tr_3[i]=moments_di[2];
+        moments_tr_4[i]=moments_di[3];
  
     }
 

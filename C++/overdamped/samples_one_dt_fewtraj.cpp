@@ -25,16 +25,22 @@
 #include <boost/random/mersenne_twister.hpp>
 
 using namespace std;
-#define m1              0.1          // minimum step scale factor
-#define M1              1./10. 
+#define m1              0.001          // minimum step scale factor
+#define M1              1./1.5 
 #define low             10           // how low the adaptive function goes in between the well
 #define numsam          5           // number of sample
 #define numruns         1000
-#define ds              0.01
+#define ds              0.07
 #define T               100       // final time of all simulations 
-#define tau             0.1  
+#define tau             0.115  
 #define printskip       10
-#define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_ani";
+
+// PATH 1 
+//#define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_ani/dt1";
+// PATH 2 
+//#define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_ani/dt2";
+// PATH 3 
+#define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped_ani/dt3";
 
 // /////////////////////////////////
 // // Double well
@@ -488,7 +494,7 @@ int main(){
     int vec_tr=nt_steps_tr();
 
     // rescaled 
-    int vec_re=nt_steps_re();
+    // int vec_re=nt_steps_re();
 
     return 0;
 }

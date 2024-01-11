@@ -31,8 +31,8 @@ using namespace std;
 #define gamma           1.            // friction coefficient
 #define tau             .1            // 'temperature'
 #define T               100          // Time to integrate to
-#define numsam          1000000       // total number of trajectories
-#define printskip       1000
+#define numsam          100000       // total number of trajectories
+#define printskip       100
 //#define PATH            "spring_v1"
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/comp_int_methods/v1"
 
@@ -41,22 +41,57 @@ using namespace std;
 /////////////////////////////////
 //vector<double> dtlist = {exp(-4.5),exp(-4.21),exp(-3.93),exp(-3.64),exp(-3.36),exp(-3.07),exp(-2.79),exp(-2.5),exp(-2.21),exp(-1.93),exp(-1.64),exp(-1.36),exp(-1.07), exp(-0.79), exp(-0.5)};
 // vector<double> dtlist = {exp(-3.93),exp(-3.36),exp(-2.79),exp(-2.21),exp(-1.64),exp(-1.07),exp(-0.5)};
-vector<double> dtlist = {0.1,0.14,0.195,0.273,0.38,0.531,0.741,1.034,1.443,2.014};
-// /////////////////////////////////
-// // Spring potential definition //
-// /////////////////////////////////
-// Spring potential 
-//parameters of the potential 
+vector<double> dtlist = {0.01,0.05,0.1,0.14,0.195,0.273,0.38,0.531,0.741,1.034};
+
+
+// // /////////////////////////////////
+// // // Spring potential definition //
+// // /////////////////////////////////
+// // Spring potential 
+// //parameters of the potential 
 #define a               2.75
 #define b               0.1
 #define x0              0.5
 #define c               0.1
 
+// long double Up(double x)
+// {
+//    long double xx02= (x-x0)*(x-x0);
+//    long double wx =b/(b/a+xx02);
+//     return (wx*wx+c)*x;
+// }
+
+// double getg(double x)
+// {
+//     double wx,f,xi,g;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     xi = f+m;
+//     g = 1/(1/M+1/sqrt(xi));
+//     return(g);
+
+// }
+
+// double getgprime(double x)
+// {
+//     double wx,f,fp,xi,gprime;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
+//     xi=sqrt(f+m*m);
+//     gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
+//     return(gprime);
+// }
+
+
+////////////////////////
+// Squarred potential //
+////////////////////////
+
+
 long double Up(double x)
 {
-   long double xx02= (x-x0)*(x-x0);
-   long double wx =b/(b/a+xx02);
-    return (wx*wx+c)*x;
+    return 2*x;
 }
 
 double getg(double x)
@@ -81,6 +116,7 @@ double getgprime(double x)
     return(gprime);
 }
 
+
 ////////////////////// ADAPTIVE STEP SIZE /////////////////////////////
 
 
@@ -102,7 +138,7 @@ vector<double> one_step_tr(double dt, double numruns, int i)
 
     // Initialise snapshot
     nsp=0;
-    #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1,g_av,gp) shared(ns,vec_q,vec_p,vec_g,moments,nsp)
+    #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1,g_av,gp) shared(ns,vec_q,vec_p,vec_g,nsp,moments)
     #pragma omp for
     for(ns = 0; ns<numsam; ns++){
         // Normal generator 
@@ -211,26 +247,26 @@ vector<double> one_step_tr(double dt, double numruns, int i)
     moments[7]=moments[7]/numsam;
 
 
-    // save the some of the values generated. 
-    string path=PATH;
-    fstream file;
-    file << fixed << setprecision(16) << endl;
-    string list_para="i="+to_string(i); 
-    string file_name=path+"/vec_tr_q"+list_para+".txt";
-    file.open(file_name,ios_base::out);
-    ostream_iterator<double> out_itr(file, "\n");
-    copy(vec_q.begin(), vec_q.end(), out_itr);
-    file.close();
+    // // save the some of the values generated. 
+    // string path=PATH;
+    // fstream file;
+    // file << fixed << setprecision(16) << endl;
+    // string list_para="i="+to_string(i); 
+    // string file_name=path+"/vec_tr_q"+list_para+".txt";
+    // file.open(file_name,ios_base::out);
+    // ostream_iterator<double> out_itr(file, "\n");
+    // copy(vec_q.begin(), vec_q.end(), out_itr);
+    // file.close();
 
-    file_name=path+"/vec_tr_p"+list_para+".txt";
-    file.open(file_name,ios_base::out);
-    copy(vec_p.begin(), vec_p.end(), out_itr);
-    file.close();
+    // file_name=path+"/vec_tr_p"+list_para+".txt";
+    // file.open(file_name,ios_base::out);
+    // copy(vec_p.begin(), vec_p.end(), out_itr);
+    // file.close();
 
-    file_name=path+"/vec_tr_g"+list_para+".txt";
-    file.open(file_name,ios_base::out);
-    copy(vec_g.begin(), vec_g.end(), out_itr);
-    file.close();
+    // file_name=path+"/vec_tr_g"+list_para+".txt";
+    // file.open(file_name,ios_base::out);
+    // copy(vec_g.begin(), vec_g.end(), out_itr);
+    // file.close();
 
     // return the saved moments 
     return moments;
@@ -246,8 +282,8 @@ vector<double> one_step_tr(double dt, double numruns, int i)
 vector<double> one_step(double dt, double numruns, int i)
 {
     //tools for sampling random increments
-    random_device rd1;
-    boost::random::mt19937 gen(rd1());
+    random_device rd2;
+    boost::random::mt19937 gen(rd2());
 
     // set variables
     double q,p,f,g,gp,gdt,C;
@@ -260,11 +296,11 @@ vector<double> one_step(double dt, double numruns, int i)
     vector<double> moments(8,0);
     nsp=0;
 
-    #pragma omp parallel private(q,p,f,C,nt,gdt) shared(nsp,ns,vec_q,vec_p,moments)
+    #pragma omp parallel private(q,p,f,C,nt,gdt,rd2) shared(nsp,ns,vec_q,vec_p,moments)
     #pragma omp for
     for(ns = 0; ns<numsam; ns++){
         // Normal generator 
-        mt19937 generator(rd1());
+        mt19937 generator(rd2());
         normal_distribution<double> normal(0, 1);
         q = 0.;
         p = 0.;
@@ -334,21 +370,21 @@ moments[5]=moments[5]/numsam;
 moments[6]=moments[6]/numsam;
 moments[7]=moments[7]/numsam;
 
-// save the some of the values generated. 
-string path=PATH;
-fstream file;
-file << fixed << setprecision(16) << endl;
-string list_para="i="+to_string(i); 
-string file_name=path+"/vec_q"+list_para+".txt";
-file.open(file_name,ios_base::out);
-ostream_iterator<double> out_itr(file, "\n");
-copy(vec_q.begin(), vec_q.end(), out_itr);
-file.close();
+// // save the some of the values generated. 
+// string path=PATH;
+// fstream file;
+// file << fixed << setprecision(16) << endl;
+// string list_para="i="+to_string(i); 
+// string file_name=path+"/vec_q"+list_para+".txt";
+// file.open(file_name,ios_base::out);
+// ostream_iterator<double> out_itr(file, "\n");
+// copy(vec_q.begin(), vec_q.end(), out_itr);
+// file.close();
 
-file_name=path+"/vec_p"+list_para+".txt";
-file.open(file_name,ios_base::out);
-copy(vec_p.begin(), vec_p.end(), out_itr);
-file.close();
+// file_name=path+"/vec_p"+list_para+".txt";
+// file.open(file_name,ios_base::out);
+// copy(vec_p.begin(), vec_p.end(), out_itr);
+// file.close();
 
 return moments;
 }
@@ -382,16 +418,16 @@ int main(void) {
         moments_tr_3[i]=moments_di[2];
         moments_tr_4[i]=moments_di[3]; //values taken by g
 
-        double gdti=moments_di[3]*dti;
+        //double gdti=moments_di[3]*dti;
 
         // no adaptivity 
-        moments_di=one_step(gdti,ni,i);
-        moments_1[i]=moments_di[0];
-        moments_2[i]=moments_di[1];
-        moments_3[i]=moments_di[2];
-        moments_4[i]=moments_di[3]; 
+        vector<double> moments_dna=one_step(dti,ni,i);
+        moments_1[i]=moments_dna[0];
+        moments_2[i]=moments_dna[1];
+        moments_3[i]=moments_dna[2];
+        moments_4[i]=moments_dna[3]; 
  
-
+    }
        // * SAVE THE COMPUTED MOMENTS IN A FILE
     /////////////////////////////////////////
     string path=PATH;
@@ -440,7 +476,7 @@ int main(void) {
     file.open(file_name,ios_base::out);
     copy(moments_tr_4.begin(), moments_tr_4.end(), out_itr);
     file.close();
-    }
+    
     // * SAVE THE TIME AND PARAMETERS OF THE SIMULATION IN A INFO FILE
     ///////////////////////////////////////////////////////////////////
     // find time by subtracting stop and start timepoints 
@@ -449,9 +485,9 @@ int main(void) {
     auto duration_s = duration_cast<seconds>(stop - start);
     auto duration_ms = duration_cast<microseconds>(stop - start);
     // save the parameters in a file info
-    fstream file;
-    string path=PATH;
-    ostream_iterator<double> out_itr(file, "\n");
+    // fstream file;
+    // string path=PATH;
+    // ostream_iterator<double> out_itr(file, "\n");
     string parameters="M="+to_string(M)+"-m="+to_string(m)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     string information=path+"/parameters_used.txt";
     file.open(information,ios_base::out);

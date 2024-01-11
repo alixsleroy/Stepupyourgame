@@ -40,12 +40,13 @@ using namespace std;
 #define printskip       10
 #define PATH     "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/data_overdamped"
 
-vector<double> dtlist = {0.003 , 0.0039, 0.005 , 0.0065, 0.0084, 0.0109, 0.014 , 0.0181,0.0234, 0.0302};
+//vector<double> dtlist = {0.003 , 0.0039, 0.005 , 0.0065, 0.0084, 0.0109, 0.014 , 0.0181,0.0234, 0.0302};
+vector<double> dtlist = {0.01, 0.02114743, 0.04472136, 0.09457416, 0.2};
 
 /////////////////////////////////
 // Anisotropic
 /////////////////////////////////
-#define s 20. // parameter of how steep the double well is 
+#define s 2. // parameter of how steep the double well is 
 #define c 0.1 //parameter that determines how high the step size goes in between well, the highest the lowest it goes 
 
 double Up(double x)
@@ -360,7 +361,7 @@ int main(){
         cout<<g_av;
 
         // no adaptivity 
-        moments_di=nt_steps_no_ada(g_av*dti,ni,i);
+        moments_di=nt_steps_no_ada(dti,ni,i);
         moments_1[i]=moments_di[0];
         moments_2[i]=moments_di[1];
         moments_3[i]=moments_di[2];

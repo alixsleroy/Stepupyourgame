@@ -35,51 +35,90 @@ using namespace std;
 #define T               500          // Time to integrate to
 #define numsam          100       // total number of trajectories
 #define printskip       10
+#define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/validate/v2"
 
 
-/////////////////////////////////
-// Square potential definition //
-/////////////////////////////////
-vector<double> dtlist = {exp(-4.5),exp(-4.21),exp(-3.93),exp(-3.64),exp(-3.36),exp(-3.07),exp(-2.79),exp(-2.5),exp(-2.21),exp(-1.93),exp(-1.64),exp(-1.36),exp(-1.07), exp(-0.79), exp(-0.5)};
+vector<double> dtlist ={0.14 , 0.195, 0.273, 0.37};
 
-// /////////////////////////////////
-// // Spring potential definition //
-// /////////////////////////////////
-// Spring potential 
-//parameters of the potential 
-#define a               2.75
-#define b               0.1
-#define x0              0.5
-#define c               0.1
 
-long double Up(double x)
+/////////////////////// DEFINE POTENTIAL //////////////////////////////
+#define r     0.01
+#define d     5
+#define m1    0.9
+#define M1     1/1.1
+
+double Up(double x)
 {
-   long double xx02= (x-x0)*(x-x0);
-   long double wx =b/(b/a+xx02);
-    return (wx*wx+c)*x;
+    double res = x*x*x+d*cos(1+d*x);
+    return res;
 }
 
 double getg(double x)
 {
-    double wx,f,xi,g;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    xi = f+m;
-    g = 1/(1/M+1/sqrt(xi));
+    double f,f2,xi,den,g;
+    f=r*(x*x*x+d*cos(d*x+1))*(x*x*x+d*cos(d*x+1));
+    f2=f*f;
+    xi=sqrt(1+m1*f2);
+    den=M1*xi+sqrt(f2);
+    g=xi/den;
     return(g);
 
 }
 
 double getgprime(double x)
 {
-    double wx,f,fp,xi,gprime;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
-    xi=sqrt(f+m*m);
-    gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
-    return(gprime);
+    double f,f2,fp,xi,gp;
+    f=r*(x*x*x+d*cos(d*x+1))*(x*x*x+d*cos(d*x+1));
+    f2=f*f;
+    fp=r*2*(x*x*x+d*cos(d*x+1))*(3*x*x-d*d*cos(1+d*x));
+    xi=sqrt(1+m1*f2);
+    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    return(gp);
 }
+
+// /////////////////////////////////
+// // Square potential definition //
+// /////////////////////////////////
+// vector<double> dtlist = {exp(-4.5),exp(-4.21),exp(-3.93),exp(-3.64),exp(-3.36),exp(-3.07),exp(-2.79),exp(-2.5),exp(-2.21),exp(-1.93),exp(-1.64),exp(-1.36),exp(-1.07), exp(-0.79), exp(-0.5)};
+
+// // /////////////////////////////////
+// // // Spring potential definition //
+// // /////////////////////////////////
+// // Spring potential 
+// //parameters of the potential 
+// #define a               2.75
+// #define b               0.1
+// #define x0              0.5
+// #define c               0.1
+
+// long double Up(double x)
+// {
+//    long double xx02= (x-x0)*(x-x0);
+//    long double wx =b/(b/a+xx02);
+//     return (wx*wx+c)*x;
+// }
+
+// double getg(double x)
+// {
+//     double wx,f,xi,g;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     xi = f+m;
+//     g = 1/(1/M+1/sqrt(xi));
+//     return(g);
+
+// }
+
+// double getgprime(double x)
+// {
+//     double wx,f,fp,xi,gprime;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
+//     xi=sqrt(f+m*m);
+//     gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
+//     return(gprime);
+// }
 
 
 /////////////////////////////////
@@ -103,8 +142,6 @@ vector<double> one_step(double dt, double numruns, int i)
     vector<double> moments(8,0);
     nsp=0;
 
-    #pragma omp parallel private(q,p,f,C,nt,gdt) shared(nsp,ns,vec_q,vec_p,moments)
-    #pragma omp for
     for(ns = 0; ns<numsam; ns++){
         // Normal generator 
         mt19937 generator(rd1());
@@ -178,7 +215,7 @@ moments[6]=moments[6]/numsam;
 moments[7]=moments[7]/numsam;
 
 // save the some of the values generated. 
-string path="./spring_v2";
+string path=PATH;
 fstream file;
 file << fixed << setprecision(16) << endl;
 string list_para="i="+to_string(i); 
@@ -320,7 +357,7 @@ vector<double> one_step_tr(double dt, double numruns, int i)
 
 
     // save the some of the values generated. 
-    string path="./spring_v2";
+    string path=PATH;
     fstream file;
     file << fixed << setprecision(16) << endl;
     string list_para="i="+to_string(i); 
@@ -386,7 +423,7 @@ int main(void) {
 
        // * SAVE THE COMPUTED MOMENTS IN A FILE
     /////////////////////////////////////////
-    string path="./spring_v2";
+    string path=PATH;
 
     // NON ADAPTIVE
     fstream file;
