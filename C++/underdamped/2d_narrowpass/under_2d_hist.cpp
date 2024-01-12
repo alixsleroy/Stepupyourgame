@@ -43,29 +43,28 @@ using namespace std;
 
 using namespace std;
 #define m               0.1
-#define M               3.
+#define M               1.
 #define m1              m*m         // minimum step scale factor
 #define M1              1./M             // maximum step        // maximum step scale factor
-#define numsam          10000          // number of sample
+#define numsam          5000          // number of sample
 
 // #define dt              .0001
 #define tau             1. 
 
 // #define numruns         10000000         // total number of trajectories
-#define gamma           .1         // friction coefficient
+#define gamma           1.         // friction coefficient
 #define printskip       1
 #define T               50
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/hist_narrowpass"
 
-#define d       6.5
-#define R       6.
-#define p       0.01
-#define K       2.
+#define d       1.
+#define R       1.
+#define p       0.001
+#define K       1.5
+#define r       1
 
-#define t       1.
-#define r       4.
 //vector<double> dtlist ={0.7 , 0.63, 0.56, 0.48, 0.41, 0.34, 0.27, 0.19, 
-vector<double> dtlist = {0.05,0.01,0.005};
+vector<double> dtlist = {0.001};
 //vector<double> dtlist = {0.001,0.0001,0.00001};
 
 
@@ -112,32 +111,62 @@ double Upy(double x, double y){
     return upy;
     }
 
+
 double getg(double x,double y){
-    double f=1/(0.5*x*x+y*y);
+    double f=(pow((x-R)*(x+R),2*r)*p/R+y*y*0.05*K);   
     double f2=f*f;
-    double xi=sqrt(1+m1*f2);
-    double den=M1*xi+f;
+    double xi=sqrt(1.+m1*f2);
+    double den=M1*xi+sqrt(f);
     double g=xi/den;
     return(g);
     }
 
 double getgprime_x(double x,double y){
-    double f=phi1(x,y);   //1/(0.5*x*x+y*y);
-    double fp=phi1_x(x);   //-x*f*f;
+    double f=pow((x-d)*(x+d),2*r)*p/R+y*y*K*0.05;   
+    double fp=4*p*r*x*pow(x*x-d*d,2*r-1);   
     double f2=f*f;
-    double xi=sqrt(1+m1*f2);
-    double gp=-f*xi*xi*fp/(sqrt(f2)*pow(xi,3)*pow(M1*xi+f,2));
+    double xi=sqrt(1.+m1*f2);
+    double sqf=sqrt(f2);
+    double gp=-f*fp/(sqf*xi*pow(M1*xi+sqf,2.));
     return(gp);
 }
 
-double getgprime_y(double x, double y){
-    double f=phi1(x,y);  //1/(0.5*x*x+y*y);
-    double fp= phi1_y(y);  //-2*y*f*f;
+double getgprime_y(double x,double y){
+    double f=pow((x-d)*(x+d),2*r)*p/R+y*y*K*0.05;   
+    double fp=2*r*pow(y,2*r-1)*K*0.05;   
     double f2=f*f;
-    double xi=sqrt(1+m1*f2);
-    double gp=-xi*xi*fp/(sqrt(f2)*pow(xi,3)*pow(M1*xi+f,2));
+    double xi=sqrt(1.+m1*f2);
+    double sqf=sqrt(f2);
+    double gp=-f*fp/(sqf*xi*pow(M1*xi+sqf,2.));
     return(gp);
 }
+
+// double getg(double x,double y){
+//     double f=1/(0.5*x*x+y*y);
+//     double f2=f*f;
+//     double xi=sqrt(1+m1*f2);
+//     double den=M1*xi+f;
+//     double g=xi/den;
+//     return(g);
+//     }
+
+// double getgprime_x(double x,double y){
+//     double f=phi1(x,y);   //1/(0.5*x*x+y*y);
+//     double fp=phi1_x(x);   //-x*f*f;
+//     double f2=f*f;
+//     double xi=sqrt(1+m1*f2);
+//     double gp=-f*xi*xi*fp/(sqrt(f2)*pow(xi,3)*pow(M1*xi+f,2));
+//     return(gp);
+// }
+
+// double getgprime_y(double x, double y){
+//     double f=phi1(x,y);  //1/(0.5*x*x+y*y);
+//     double fp= phi1_y(y);  //-2*y*f*f;
+//     double f2=f*f;
+//     double xi=sqrt(1+m1*f2);
+//     double gp=-xi*xi*fp/(sqrt(f2)*pow(xi,3)*pow(M1*xi+f,2));
+//     return(gp);
+// }
 
 // There might be error on these definition 
 // double getg(double x,double y){
@@ -282,15 +311,12 @@ int one_step(double dt, double numruns, int i)
            
         } 
 
-        if (nt%printskip==0){
-            vec_qx[nsp]=qx;
-            vec_px[nsp]=px;
-            vec_qy[nsp]=qy;
-            vec_py[nsp]=py;
-            vec_cross[nsp]=ncrossing;
+        vec_qx[ns]=qx;
+        vec_px[ns]=px;
+        vec_qy[ns]=qy;
+        vec_py[ns]=py;
+        vec_cross[ns]=ncrossing;
 
-            nsp+=1;
-            }
 
     }
 
@@ -468,15 +494,14 @@ double one_step_tr(double dt, double numruns, int i)
 
         }
 
-        if (nt%printskip==0){
-            vec_qx[nsp]=qx;
-            vec_px[nsp]=px;
-            vec_qy[nsp]=qy;
-            vec_py[nsp]=py;
-            vec_g[nsp]=g;
-            vec_cross[nsp]=ncrossing;
-            nsp+=1;
-            }
+
+        vec_qx[ns]=qx;
+        vec_px[ns]=px;
+        vec_qy[ns]=qy;
+        vec_py[ns]=py;
+        vec_g[ns]=g;
+        vec_cross[ns]=ncrossing;
+    
 
     }
 g_av=g_av/(numsam*numruns);
