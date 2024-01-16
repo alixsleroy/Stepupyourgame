@@ -50,21 +50,21 @@ using namespace std;
 /////////////////////// DEFINE POTENTIAL //////////////////////////////
 #define r     0.1
 #define d     5
-#define m1    0.1
-#define max    0.4 //max value that can be taken by dt
+#define m1    0.01
+#define M1    1/2 //max value that can be taken by dt
+
 
 
 double Up(double x)
 {
-    double res = x*x*x+d*cos(1+d*x);
+    double res = -2*x+2*1/pow((abs(x)-5),3)*abs(x)/x;
     return res;
 }
 
 double getg(double x)
 {
-    double f,f2,xi,den,g,M1;
-    M1=dt/max;
-    f=r*((cos(1+d*x))+x*x*x)*((cos(1+d*x))+x*x*x);
+    double f,f2,xi,den,g;
+    f=1/(abs(x)-5);
     f2=f*f;
     xi=sqrt(1+m1*f2);
     den=M1*xi+sqrt(f2);
@@ -75,15 +75,47 @@ double getg(double x)
 
 double getgprime(double x)
 {
-    double f,f2,fp,xi,gp,M1;
-    M1=dt/max;
-    f=r*((cos(1+d*x))+x*x*x)*((cos(1+d*x))+x*x*x);
-    f2=f*f;
-    fp=r*2*(cos(1+d*x)+x*x*x)*(3*x*x-d*d*sin(1+d*x));
-    xi=sqrt(1+m1*f2);
-    gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
-    return(gp);
+    // double f,f2,fp,xi,gp,M1;
+    // M1=dt/max;
+    // f=r*((cos(1+d*x))+x*x*x)*((cos(1+d*x))+x*x*x);
+    // f2=f*f;
+    // fp=r*2*(cos(1+d*x)+x*x*x)*(3*x*x-d*d*sin(1+d*x));
+    // xi=sqrt(1+m1*f2);
+    // gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    return(0);
 }
+
+
+// double Up(double x)
+// {
+//     double res = x*x*x+d*cos(1+d*x);
+//     return res;
+// }
+
+// double getg(double x)
+// {
+//     double f,f2,xi,den,g,M1;
+//     M1=dt/max;
+//     f=r*((cos(1+d*x))+x*x*x)*((cos(1+d*x))+x*x*x);
+//     f2=f*f;
+//     xi=sqrt(1+m1*f2);
+//     den=M1*xi+sqrt(f2);
+//     g=xi/den;
+//     return(g);
+
+// }
+
+// double getgprime(double x)
+// {
+//     double f,f2,fp,xi,gp,M1;
+//     M1=dt/max;
+//     f=r*((cos(1+d*x))+x*x*x)*((cos(1+d*x))+x*x*x);
+//     f2=f*f;
+//     fp=r*2*(cos(1+d*x)+x*x*x)*(3*x*x-d*d*sin(1+d*x));
+//     xi=sqrt(1+m1*f2);
+//     gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+//     return(gp);
+// }
 
 
 /////////////////////////////////

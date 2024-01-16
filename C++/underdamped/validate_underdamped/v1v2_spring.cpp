@@ -29,58 +29,98 @@ using namespace std;
 
 
 #define gamma           1.            // friction coefficient
-#define tau             1.            // 'temperature'
+#define tau             5.            // 'temperature'
 #define T               100          // Time to integrate to
-#define numsam          10000       // total number of trajectories
+#define numsam          1000       // total number of trajectories
 #define printskip       1
 
 
 ///////////////////// DEFINE POTENTIAL //////////////////////////////
-// #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/spring_validate/v1"
-#define PATH "./spring_a15_gamma1"
-vector<double> dtlist ={0.7 , 0.63, 0.56, 0.48, 0.41, 0.34, 0.27, 0.19, 0.12, 0.05};
+#define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/spring_validate/v1"
+//#define PATH "./spring_a15_gamma1"
+vector<double> dtlist ={0.001};
 //larger range of values vector<double> dtlist = {0.1  , 0.14 , 0.195,0.273, 0.38 , 0.531, 0.741, 1.034, 1.443, 2.014};
 
-/////////////////////////////////
-// Spring potential definition //
-/////////////////////////////////
-#define m               0.001
-#define M               1.1
-// Spring potential 
-//parameters of the potential 
-#define a               4.0
-#define b               0.1
-#define x0              0.5
-#define c               0.1
 
-long double Up(double x)
+
+/////////////////////// DEFINE POTENTIAL //////////////////////////////
+
+#define m1    0.01
+#define M1    1/2 //max value that can be taken by dt
+
+
+
+double Up(double x)
 {
-   long double xx02= (x-x0)*(x-x0);
-   long double wx =b/(b/a+xx02);
-    return (wx*wx+c)*x;
+    double res = -2*x-2*1/pow((abs(x)-5),3)*abs(x)/x;
+    return res;
 }
 
 double getg(double x)
 {
-    double wx,f,xi,g;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    xi = f+m;
-    g = 1/(1/M+1/sqrt(xi));
+    double f,f2,xi,den,g;
+    f=1/(abs(x)-5);
+    f2=f*f;
+    xi=sqrt(1+m1*f2);
+    den=M1*xi+sqrt(f2);
+    g=xi/den;
     return(g);
 
 }
 
 double getgprime(double x)
 {
-    double wx,f,fp,xi,gprime;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
-    xi=sqrt(f+m*m);
-    gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
-    return(gprime);
+    // double f,f2,fp,xi,gp,M1;
+    // M1=dt/max;
+    // f=r*((cos(1+d*x))+x*x*x)*((cos(1+d*x))+x*x*x);
+    // f2=f*f;
+    // fp=r*2*(cos(1+d*x)+x*x*x)*(3*x*x-d*d*sin(1+d*x));
+    // xi=sqrt(1+m1*f2);
+    // gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
+    return(0);
 }
+
+
+// /////////////////////////////////
+// // Spring potential definition //
+// /////////////////////////////////
+// #define m               0.001
+// #define M               1.1
+// // Spring potential 
+// //parameters of the potential 
+// #define a               4.0
+// #define b               0.1
+// #define x0              0.5
+// #define c               0.1
+
+// long double Up(double x)
+// {
+//    long double xx02= (x-x0)*(x-x0);
+//    long double wx =b/(b/a+xx02);
+//     return (wx*wx+c)*x;
+// }
+
+// double getg(double x)
+// {
+//     double wx,f,xi,g;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     xi = f+m;
+//     g = 1/(1/M+1/sqrt(xi));
+//     return(g);
+
+// }
+
+// double getgprime(double x)
+// {
+//     double wx,f,fp,xi,gprime;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
+//     xi=sqrt(f+m*m);
+//     gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
+//     return(gprime);
+// }
 
 
 /////////////////////////////////
@@ -109,7 +149,7 @@ vector<double> one_step(double dt, double numruns, int i)
         // Normal generator 
         mt19937 generator(rd1());
         normal_distribution<double> normal(0, 1);
-        q = 0.;
+        q = 1.;
         p = 0.;
         f = -Up(q);  
         for(nt = 0; nt<numruns; nt++)
@@ -226,7 +266,7 @@ vector<double> one_step_tr_B(double dt, double numruns, int i)
         // Normal generator 
         mt19937 generator(rd1());
         normal_distribution<double> normal(0, 1);
-        q = 0.;
+        q = 1.;
         p = 0.;
         g = getg(q);
         gdt = dt*g;
@@ -396,7 +436,7 @@ vector<double> one_step_tr_O(double dt, double numruns, int i)
         // Normal generator 
         mt19937 generator(rd1());
         normal_distribution<double> normal(0, 1);
-        q = 0.;
+        q = 1.;
         p = 0.;
         g = getg(q);
         gdt = dt*g;
@@ -660,8 +700,8 @@ int main(void) {
     auto duration_s = duration_cast<seconds>(stop - start);
     auto duration_ms = duration_cast<microseconds>(stop - start);
     // save the parameters in a file info
-    string parameters="M="+to_string(M)+"-m="+to_string(m)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-a="+to_string(a)+"-b="+to_string(b)+"-x0="+to_string(x0)+"-c="+to_string(c)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
-    // string parameters="M1="+to_string(M1)+"-m1="+to_string(m1)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-r="+to_string(r)+"-d="+to_string(d)+"-c="+to_string(c)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
+    // string parameters="M="+to_string(M)+"-m="+to_string(m)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-a="+to_string(a)+"-b="+to_string(b)+"-x0="+to_string(x0)+"-c="+to_string(c)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
+    string parameters="M1="+to_string(M1)+"-m1="+to_string(m1)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     string information=path+"/parameters_used.txt";
     file.open(information,ios_base::out);
     file << parameters;
