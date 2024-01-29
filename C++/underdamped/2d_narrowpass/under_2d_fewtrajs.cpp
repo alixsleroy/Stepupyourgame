@@ -42,18 +42,18 @@ using namespace std;
 // # include "normal.h"
 
 using namespace std;
-#define m               0.051
+#define m               0.1
 #define M               1.
 #define m1              m*m         // minimum step scale factor
 #define M1              1./M             // maximum step scale factor
 #define numsam          1          // number of sample
 
 #define dt              .001
-#define tau             1.
+#define tau             1.5
 
-#define numruns         5000000         // total number of trajectories
-#define gamma           1.            // friction coefficient
-#define printskip       1000
+#define numruns         1000000         // total number of trajectories
+#define gamma           1.5            // friction coefficient
+#define printskip       1
 
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/fewtraj_narrowpass"
 
@@ -62,11 +62,16 @@ using namespace std;
 // #define p       0.01
 // #define K       4.
 
-#define d       3.5
-#define R       2.
+#define d       2.8
+#define R       8.3
 #define p       0.001
-#define K       1.5
-#define r       1
+#define K       0.4
+#define r       2.
+#define ax      0.05
+#define xw      0.15 // parameter of phi_1, determines how much of a double the potentila is
+//vector<double> dtlist ={0.7 , 0.63, 0.56, 0.48, 0.41, 0.34, 0.27, 0.19, 
+// vector<double> dtlist = {0.1,0.01,0.005};
+//vector<double> dtlist = {0.001,0.0001,0.00001};
 
 ///////////////////////////////////////
 /// Bobsled Potential around x=4     //
@@ -75,16 +80,16 @@ double s(double x){
     return 1./(1.+pow(x/d,6.));
     }
 double phi1(double x,double y){
-    return  p*pow((x-R)*(x+R),2.) + 0.1*x*x + 0.1*y*y;
+    return  p*pow((x-R)*(x+R),2.) + xw*x*x + 0.1*y*y;
     }
 double phi2(double y){
     return 2.+K*y*y;
 }
 double phi1_x(double x){
-    return x*(-4.*p*R*R+4.*p*x*x+0.002);
+    return x*(-4.*p*R*R+4.*p*x*x+2*xw);
 }
 double phi1_y(double y){
-    return 0.02*y;
+    return 0.2*y;
 }
 double phi2_y(double y){
     return 2.*K*y;
@@ -110,18 +115,20 @@ double Upy(double x, double y){
     return upy;
     }
 
+
+
 double getg(double x,double y){
-    double f=(pow((x-R)*(x+R),2*r)*p/R+y*y*0.05*K);   
+    double f=1/(ax*pow(x,(2*r))); //+ay*y*y);  // a*pow((x+3)*(x-3),(2*r));  //(pow((x-d)*(x+d),2*r)*p/R+y*y*0.05*K);   
     double f2=f*f;
     double xi=sqrt(1.+m1*f2);
-    double den=M1*xi+sqrt(f);
+    double den=M1*xi+sqrt(f2);
     double g=xi/den;
     return(g);
     }
 
 double getgprime_x(double x,double y){
-    double f=pow((x-d)*(x+d),2*r)*p/R+y*y*K*0.05;   
-    double fp=4*p*r*x*pow(x*x-d*d,2*r-1);   
+    double f=1/(ax*pow(x,(2*r))); //+ay*y*y);  // a*pow((x+3)*(x-3),(2*r));  //(pow((x-d)*(x+d),2*r)*p/R+y*y*0.05*K);   
+    double fp=-2*ax*r*pow(x,2*r-1)/pow(ax*pow(x,2*r),2);    ///-2*ax*r*pow(x,2*r-1)/pow(ax*pow(x,2*r)+ay*y*y,2);    //4*a*r*x*pow(x*x-9,2*r-1);                               //4*p*r*x*pow(x*x-d*d,2*r-1);   
     double f2=f*f;
     double xi=sqrt(1.+m1*f2);
     double sqf=sqrt(f2);
@@ -130,14 +137,43 @@ double getgprime_x(double x,double y){
 }
 
 double getgprime_y(double x,double y){
-    double f=pow((x-d)*(x+d),2*r)*p/R+y*y*K*0.05;   
-    double fp=2*r*pow(y,2*r-1)*K*0.05;   
+    double f=1/(ax*pow(x,(2*r))); //+ay*y*y);  // a*pow((x+3)*(x-3),(2*r));  //(pow((x-d)*(x+d),2*r)*p/R+y*y*0.05*K);   
+    double fp=0; //-2*y*ay/pow(ax*pow(x,2*r)+ay*y*y,2); 
     double f2=f*f;
     double xi=sqrt(1.+m1*f2);
     double sqf=sqrt(f2);
     double gp=-f*fp/(sqf*xi*pow(M1*xi+sqf,2.));
     return(gp);
 }
+
+// double getg(double x,double y){
+//     double f=(pow((x-R)*(x+R),2*r)*p/R+y*y*0.05*K);   
+//     double f2=f*f;
+//     double xi=sqrt(1.+m1*f2);
+//     double den=M1*xi+sqrt(f);
+//     double g=xi/den;
+//     return(g);
+//     }
+
+// double getgprime_x(double x,double y){
+//     double f=pow((x-d)*(x+d),2*r)*p/R+y*y*K*0.05;   
+//     double fp=4*p*r*x*pow(x*x-d*d,2*r-1);   
+//     double f2=f*f;
+//     double xi=sqrt(1.+m1*f2);
+//     double sqf=sqrt(f2);
+//     double gp=-f*fp/(sqf*xi*pow(M1*xi+sqf,2.));
+//     return(gp);
+// }
+
+// double getgprime_y(double x,double y){
+//     double f=pow((x-d)*(x+d),2*r)*p/R+y*y*K*0.05;   
+//     double fp=2*r*pow(y,2*r-1)*K*0.05;   
+//     double f2=f*f;
+//     double xi=sqrt(1.+m1*f2);
+//     double sqf=sqrt(f2);
+//     double gp=-f*fp/(sqf*xi*pow(M1*xi+sqf,2.));
+//     return(gp);
+// }
 
 
 // Problem with what is below
@@ -231,12 +267,12 @@ int one_step(double ds)
         //       normal_distribution<double>{0.0, 1.0 } };
 
         // X c0oordinates
-        qx = 4.;
-        px = 0.1;
+        qx =-.1;
+        px = 0.0;
 
         // Y coordinates
         qy = 0.;
-        py = 0.1;
+        py = 0.0;
 
         // Values of dU/dx and dU/dy
         fx = -Upx(qx,qy);  
@@ -361,12 +397,12 @@ double one_step_trO(void)
         normal_distribution<double> normal(0, 1);
 
         // X- coordinates 
-        qx =4.;
-        px = .1;
+        qx =-.1;
+        px = .0;
 
         // Y- coordinates 
         qy = 0.;
-        py = .1;
+        py = .0;
 
         // 
         gpx=getgprime_x(qx,qy);
@@ -400,10 +436,10 @@ double one_step_trO(void)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(qx+dt/4*px*g,qy+dt/4*py*g);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
-            g0=getg(qx+dt/4*px*g1,qy+dt/4*py*g1);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g,qy+gdt/4*py*g);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g1,qy+gdt/4*py*g1);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
             gdt=g1*dt;
             
             // X- coordinates 
@@ -428,10 +464,10 @@ double one_step_trO(void)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(qx+dt/4*px*g,qy+dt/4*py*g);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
-            g0=getg(qx+dt/4*px*g1,qy+dt/4*py*g1);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g,qy+gdt/4*py*g);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g1,qy+gdt/4*py*g1);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
             gdt=g1*dt;
             
             // X- coordinates 
@@ -535,12 +571,12 @@ double one_step_trB(void)
         normal_distribution<double> normal(0, 1);
 
         // X- coordinates 
-        qx =4.;
-        px = .1;
+        qx =-.1;
+        px = .0;
 
         // Y- coordinates 
-        qy = 0.;
-        py = .1;
+        qy = 0.0;
+        py = .0;
 
         // 
         gpx=getgprime_x(qx,qy);
@@ -574,10 +610,10 @@ double one_step_trB(void)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(qx+dt/4*px*g,qy+dt/4*py*g);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
-            g0=getg(qx+dt/4*px*g1,qy+dt/4*py*g1);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g,qy+gdt/4*py*g);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g1,qy+gdt/4*py*g1);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
             gdt=g1*dt;
             
             // X- coordinates 
@@ -600,10 +636,10 @@ double one_step_trB(void)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(qx+dt/4*px*g,qy+dt/4*py*g);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
-            g0=getg(qx+dt/4*px*g1,qy+dt/4*py*g1);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g,qy+gdt/4*py*g);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g1,qy+gdt/4*py*g1);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
             gdt=g1*dt;
             
             // X- coordinates 

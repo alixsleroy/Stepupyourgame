@@ -42,88 +42,85 @@ using namespace std;
 // # include "normal.h"
 
 using namespace std;
-#define m               0.1
+#define m               0.6
 #define M               1.
 #define m1              m*m         // minimum step scale factor
 #define M1              1./M             // maximum step        // maximum step scale factor
-#define numsam          5000          // number of sample
+#define numsam          250       // number of sample
+vector<double> dtlist = {0.05,0.025,0.01,0.0075,0.005};
+#define tau             1.5 
 
-// #define dt              .0001
-#define tau             1. 
-
-// #define numruns         10000000         // total number of trajectories
-#define gamma           1.         // friction coefficient
-#define printskip       1
-#define T               50
+#define gamma           .1         // friction coefficient
+#define printskip       100
+#define Nt              100000
+#define T               500
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/hist_narrowpass"
 
-#define d       1.
-#define R       1.
+#define d       2.2
+#define R       8.3
 #define p       0.001
-#define K       1.5
-#define r       1
-
-//vector<double> dtlist ={0.7 , 0.63, 0.56, 0.48, 0.41, 0.34, 0.27, 0.19, 
-vector<double> dtlist = {0.001};
-//vector<double> dtlist = {0.001,0.0001,0.00001};
-
+#define K       .4
+#define r       2.
+#define ax      0.20
+#define xw      0.15 // parameter of phi_1, determines how much of a double the potentila is
+#define yw      0.1
 
 ///////////////////////////////////////
 /// Bobsled Potential around x=4     //
 ///////////////////////////////////////
 double s(double x){
-    return 1./(1.+pow(x/d,6));
+    return 1./(1.+pow(x/d,6.));
     }
 double phi1(double x,double y){
-    return  p*pow((x-R)*(x+R),2) + 0.001*x*x + 0.01*y*y;
+    return  p*pow((x-R)*(x+R),2.) + xw*x*x + yw*y*y;
     }
 double phi2(double y){
-    return 2+K*y*y;
+    return 2.+K*y*y;
 }
 double phi1_x(double x){
-    return x*(-4*p*R*R+4*p*x*x+0.002);
+    return x*(-4.*p*R*R+4.*p*x*x+2*xw);
 }
 double phi1_y(double y){
-    return 0.02*y;
+    return 0.2*y;
 }
 double phi2_y(double y){
-    return 2*K*y;
+    return 2.*K*y;
 }
 double s_x(double x){
     double x5,d6,res;
-    x5=pow(x,5);
-    d6=pow(d,6);
-    res=-6*x5/(d6*pow(x5*x/d6+1,2));
+    x5=pow(x,5.);
+    d6=pow(d,6.);
+    res=-6.*x5*d6/(pow(x*x5+d6,2.));
     return res;
 }
 double Upx(double x, double y){
-
     double upx,sx_x;
     sx_x=s_x(x);
-    upx=phi1_x(x)*(1-s(x))+sx_x*(phi2(x)-phi1(x,y));
+    upx=phi1_x(x)*(1.-s(x))+sx_x*(phi2(x)-phi1(x,y));
     return upx;
 }
 
 double Upy(double x, double y){
     double upy;
     double sx=s(x);
-    upy = phi1_y(y)*(1-sx)+sx*phi2_y(y);
+    upy = phi1_y(y)*(1.-sx)+sx*phi2_y(y);
     return upy;
     }
 
 
+
 double getg(double x,double y){
-    double f=(pow((x-R)*(x+R),2*r)*p/R+y*y*0.05*K);   
+    double f=1/(ax*pow(x,(2*r))); //+ay*y*y);  // a*pow((x+3)*(x-3),(2*r));  //(pow((x-d)*(x+d),2*r)*p/R+y*y*0.05*K);   
     double f2=f*f;
     double xi=sqrt(1.+m1*f2);
-    double den=M1*xi+sqrt(f);
+    double den=M1*xi+sqrt(f2);
     double g=xi/den;
     return(g);
     }
 
 double getgprime_x(double x,double y){
-    double f=pow((x-d)*(x+d),2*r)*p/R+y*y*K*0.05;   
-    double fp=4*p*r*x*pow(x*x-d*d,2*r-1);   
+    double f=1/(ax*pow(x,(2*r))); //+ay*y*y);  // a*pow((x+3)*(x-3),(2*r));  //(pow((x-d)*(x+d),2*r)*p/R+y*y*0.05*K);   
+    double fp=-2*r*pow(x,-2*r-1)/ax;    ///-2*ax*r*pow(x,2*r-1)/pow(ax*pow(x,2*r)+ay*y*y,2);    //4*a*r*x*pow(x*x-9,2*r-1);                               //4*p*r*x*pow(x*x-d*d,2*r-1);   
     double f2=f*f;
     double xi=sqrt(1.+m1*f2);
     double sqf=sqrt(f2);
@@ -132,15 +129,14 @@ double getgprime_x(double x,double y){
 }
 
 double getgprime_y(double x,double y){
-    double f=pow((x-d)*(x+d),2*r)*p/R+y*y*K*0.05;   
-    double fp=2*r*pow(y,2*r-1)*K*0.05;   
+    double f=1/(ax*pow(x,(2*r))); //+ay*y*y);  // a*pow((x+3)*(x-3),(2*r));  //(pow((x-d)*(x+d),2*r)*p/R+y*y*0.05*K);   
+    double fp=0; //-2*y*ay/pow(ax*pow(x,2*r)+ay*y*y,2); 
     double f2=f*f;
     double xi=sqrt(1.+m1*f2);
     double sqf=sqrt(f2);
     double gp=-f*fp/(sqf*xi*pow(M1*xi+sqf,2.));
     return(gp);
 }
-
 // double getg(double x,double y){
 //     double f=1/(0.5*x*x+y*y);
 //     double f2=f*f;
@@ -212,10 +208,11 @@ int one_step(double dt, double numruns, int i)
     double qy,py,gpy,fy,dwy,signx,signx_c,ncrossing;
     
     // Save the values 
-    vector<double> vec_qx(numsam/printskip,0);
-    vector<double> vec_qy(numsam/printskip,0);
-    vector<double> vec_px(numsam/printskip,0);
-    vector<double> vec_py(numsam/printskip,0);
+    // cout<<int(numsam*numruns/printskip);
+    vector<double> vec_qx(int((numsam*numruns)/printskip),0);
+    vector<double> vec_qy(int((numsam*numruns)/printskip),0);
+    vector<double> vec_px(int((numsam*numruns)/printskip),0);
+    vector<double> vec_py(int((numsam*numruns)/printskip),0);
     vector<double> vec_cross(numsam,0);
 
     int ns,nt,nsp;
@@ -233,7 +230,7 @@ int one_step(double dt, double numruns, int i)
         //       normal_distribution<double>{0.0, 1.0 } };
 
         // X c0oordinates
-        qx = 4.;
+        qx =-10.;
         px = 0.1;
         signx=(qx>0)-(qx<0);
 
@@ -308,13 +305,21 @@ int one_step(double dt, double numruns, int i)
                 signx_c=signx;
             }
 
+            // **************
+            // * Save values
+            // **************
+            // burn in 1000
+            if (nt%printskip==0 && nt>numruns/10){
+                vec_qx[nsp]=qx;
+                vec_px[nsp]=px;
+                vec_qy[nsp]=qy;
+                vec_py[nsp]=py;
+                nsp+=1;
+            }
            
         } 
 
-        vec_qx[ns]=qx;
-        vec_px[ns]=px;
-        vec_qy[ns]=qy;
-        vec_py[ns]=py;
+     
         vec_cross[ns]=ncrossing;
 
 
@@ -369,11 +374,11 @@ double one_step_tr(double dt, double numruns, int i)
 
 
     // Save the values 
-    vector<double> vec_qx(numsam/printskip,0);
-    vector<double> vec_qy(numsam/printskip,0);
-    vector<double> vec_px(numsam/printskip,0);
-    vector<double> vec_py(numsam/printskip,0);
-    vector<double> vec_g(numsam/printskip,0);
+    vector<double> vec_qx(int((numsam)*(numruns)/printskip),0);
+    vector<double> vec_qy(int((numsam)*(numruns)/printskip),0);
+    vector<double> vec_px(int((numsam)*(numruns)/printskip),0);
+    vector<double> vec_py(int((numsam)*(numruns)/printskip),0);
+    vector<double> vec_g(int((numsam)*(numruns)/printskip),0);
     vector<double> vec_cross(numsam,0);
 
 
@@ -385,7 +390,7 @@ double one_step_tr(double dt, double numruns, int i)
         normal_distribution<double> normal(0, 1);
 
         // X- coordinates 
-        qx =4.;
+        qx =-10.;
         px = .1;
         signx=(qx>0)-(qx<0);
 
@@ -425,10 +430,10 @@ double one_step_tr(double dt, double numruns, int i)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(qx+dt/4*px*g,qy+dt/4*py*g);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
-            g0=getg(qx+dt/4*px*g1,qy+dt/4*py*g1);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g,qy+gdt/4*py*g);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g1,qy+gdt/4*py*g1);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
             gdt=g1*dt;
             
             // X- coordinates 
@@ -453,11 +458,11 @@ double one_step_tr(double dt, double numruns, int i)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(qx+dt/4*px*g,qy+dt/4*py*g);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
-            g0=getg(qx+dt/4*px*g1,qy+dt/4*py*g1);
-            g1=getg(qx+dt/4*px*g0,qy+dt/4*py*g0);
-            gdt=g1*dt;
+            g0=getg(qx+gdt/4*px*g,qy+gdt/4*py*g);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
+            g0=getg(qx+gdt/4*px*g1,qy+gdt/4*py*g1);
+            g1=getg(qx+gdt/4*px*g0,qy+gdt/4*py*g0);
+            gdt=g1*gdt;
             
             // X- coordinates 
             qx += 0.5*gdt*px;
@@ -492,14 +497,20 @@ double one_step_tr(double dt, double numruns, int i)
                 signx_c=signx;
             }
 
+            // **************
+            // * Save values
+            // **************
+            if (nt%printskip==0){
+                vec_qx[nsp]=qx;
+                vec_px[nsp]=px;
+                vec_qy[nsp]=qy;
+                vec_py[nsp]=py;
+                vec_g[nsp]=g;
+                nsp+=1;
+            }
+           
+
         }
-
-
-        vec_qx[ns]=qx;
-        vec_px[ns]=px;
-        vec_qy[ns]=qy;
-        vec_py[ns]=py;
-        vec_g[ns]=g;
         vec_cross[ns]=ncrossing;
     
 
@@ -547,13 +558,11 @@ return g_av;
 
 
 int main(void) { 
-
-for(int i = 0; i < dtlist.size(); i++){ // run the loop for ns samples
-    double dti = dtlist[i];
-    double ni = T/dti;
-    double g_av= one_step_tr(dti,ni,i);
-    int out= one_step(dti,ni,i);
-}
-
+    for(int i = 0; i < dtlist.size(); i++){ // run the loop for ns samples
+        double dti = dtlist[i];
+        double nti = T/dti;
+        double g_av= one_step_tr(dti,nti,i);
+        int out= one_step(dti,nti,i);
+    }
 return 0;
 }

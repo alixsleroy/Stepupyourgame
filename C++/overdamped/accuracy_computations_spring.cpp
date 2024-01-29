@@ -95,7 +95,7 @@ long double Up(double x)
 //     double wx,f,xi,g;
 //     wx =(b/a+pow(x-x0,2))/b;
 //     f = wx*wx;
-//     xi = f+m;
+//     xi = f+m*m;
 //     g = 1/(1/M+1/sqrt(xi));
 //     return(g);
 

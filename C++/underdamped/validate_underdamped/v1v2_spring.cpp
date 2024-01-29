@@ -29,98 +29,145 @@ using namespace std;
 
 
 #define gamma           1.            // friction coefficient
-#define tau             5.            // 'temperature'
-#define T               100          // Time to integrate to
-#define numsam          1000       // total number of trajectories
-#define printskip       1
-
+#define tau             1.            // 'temperature'
+#define Nt              20000          // Number of steps forward in time
+#define numsam          5000       // total number of trajectories
+#define printskip       10		// skip this number when saving final values of the vector (should be high as we can't save 10^7 traj) vector
+#define printskip2	    100		// use every printskip2 val in a trajectory for the computation of the observable, burnin is 10 000
+#define burnin          10000   // number of values to skip before saving observable
 
 ///////////////////// DEFINE POTENTIAL //////////////////////////////
+
+/////////////////////////////////
+// Spring potential definition //
+/////////////////////////////////
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/spring_validate/v1"
-//#define PATH "./spring_a15_gamma1"
-vector<double> dtlist ={0.001};
-//larger range of values vector<double> dtlist = {0.1  , 0.14 , 0.195,0.273, 0.38 , 0.531, 0.741, 1.034, 1.443, 2.014};
+// #define PATH "./spring_a4_gamma01"
+// FOR A=4
+vector<double> dtlist ={0.7 , 0.63, 0.56,0.48,0.41,0.34,0.27, 0.19, 0.12, 0.05};
 
+// FOR A =15
+//larger range of values 
+//vector<double> dtlist = {0.1  , 0.14 , 0.195,0.273, 0.38 , 0.531, 0.741, 1.034, 1.443, 2.014};
+//vector<double> dtlist = {2.014,1.443,1.034,0.741,0.531,0.38,0.273,0.195,0.14,0.1};
 
+#define m               0.001
+#define M               1.1
+// Spring potential -- parameters of the potential 
+#define a               4.0
+#define b               0.1
+#define x0              0.5
+#define c               0.1
 
-/////////////////////// DEFINE POTENTIAL //////////////////////////////
-
-#define m1    0.01
-#define M1    1/2 //max value that can be taken by dt
-
-
-
-double Up(double x)
+long double Up(double x)
 {
-    double res = -2*x-2*1/pow((abs(x)-5),3)*abs(x)/x;
-    return res;
+   long double xx02= (x-x0)*(x-x0);
+   long double wx =b/(b/a+xx02);
+    return (wx*wx+c)*x;
 }
 
 double getg(double x)
 {
-    double f,f2,xi,den,g;
-    f=1/(abs(x)-5);
-    f2=f*f;
-    xi=sqrt(1+m1*f2);
-    den=M1*xi+sqrt(f2);
-    g=xi/den;
+    double wx,f,xi,g;
+    wx =(b/a+pow(x-x0,2))/b;
+    f = wx*wx;
+    xi = f+m*m;
+    g = 1/(1/M+1/sqrt(xi));
     return(g);
 
 }
 
 double getgprime(double x)
 {
-    // double f,f2,fp,xi,gp,M1;
-    // M1=dt/max;
-    // f=r*((cos(1+d*x))+x*x*x)*((cos(1+d*x))+x*x*x);
-    // f2=f*f;
-    // fp=r*2*(cos(1+d*x)+x*x*x)*(3*x*x-d*d*sin(1+d*x));
-    // xi=sqrt(1+m1*f2);
-    // gp=-xi*xi*fp/(pow(xi,3)*pow(M1*xi+f,2));
-    return(0);
+    double wx,f,fp,xi,gprime;
+    wx =(b/a+pow(x-x0,2))/b;
+    f = wx*wx;
+    fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
+    xi=sqrt(f+m*m);
+    gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
+    return(gprime);
 }
 
 
-// /////////////////////////////////
-// // Spring potential definition //
-// /////////////////////////////////
-// #define m               0.001
-// #define M               1.1
-// // Spring potential 
-// //parameters of the potential 
-// #define a               4.0
-// #define b               0.1
-// #define x0              0.5
-// #define c               0.1
+///////////////////////////////////////////////////////////////
+///////////////////// Ben Potential //////////////////////////////
+///////////////////////////////////////////////////////////////
+// #define PATH "./pot_ben"
+// #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/spring_validate/v2";
 
-// long double Up(double x)
+// vector<double> dtlist = {0.37,0.3456,0.3211,0.2967,0.2722,0.2478,0.2233,0.1989,0.1744,0.15};
+// #define r     1.5
+// #define d     5.
+// #define m    .9
+// #define m1    3.
+// #define M     1.5
+// #define M1    1./M
+// #define c     0.5
+
+// double Up(double x)
 // {
-//    long double xx02= (x-x0)*(x-x0);
-//    long double wx =b/(b/a+xx02);
-//     return (wx*wx+c)*x;
+//     double res = x*x*x+d*cos(1+d*x);
+//     return res;
 // }
 
 // double getg(double x)
 // {
-//     double wx,f,xi,g;
-//     wx =(b/a+pow(x-x0,2))/b;
-//     f = wx*wx;
-//     xi = f+m;
-//     g = 1/(1/M+1/sqrt(xi));
+//     double f,f2,xi,den,g;
+//     f=r*pow((x-0.1142)*(x+1.2160),2); //r*pow((x+0.5088)*(x-0.7270),2);     //r*pow((x-0.1142)*(x+0.5088)*(x-0.7270),2);
+//     f2=f*f;
+//     xi=sqrt(1+m1*f2);
+//     den=M1*xi+sqrt(f2);
+//     g=xi/den;
+//     // cout<<"\n";
+//     // cout<<g;
+//     // cout<<"\n";
 //     return(g);
-
 // }
 
 // double getgprime(double x)
 // {
-//     double wx,f,fp,xi,gprime;
-//     wx =(b/a+pow(x-x0,2))/b;
-//     f = wx*wx;
-//     fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
-//     xi=sqrt(f+m*m);
-//     gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
-//     return(gprime);
+//     double f,f2,xi,fp,gp,sqf,x2,x3,x4,x5,x6;
+//     f=r*pow((x-0.1142)*(x+1.2160),2);    //r*(x-0.1142)*(x-0.1142); //r*pow((x+0.5088)*(x-0.7270),2);     //r*pow((x-0.1142)*(x+0.5088)*(x-0.7270),2);
+//     f2=f*f;
+//     x2=x*x;
+//     x3=x*x2;
+//     x4=x3*x;
+//     x5=x4*x;
+//     x6=x5*x;
+//     fp=r*(-0.306008 + 1.87246*x+ 6.6108*x2+4*x3); //2*r*(x-0.1142);    //r*(0.161423-1.38437*x-1.3092*x2+4*x3);   //r*(-0.0291454+0.181856*x +0.94148*x2-2.31787*x3-3.324*x4+6*x5);
+//     xi=sqrt(1+m1*f2);
+//     sqf=f/sqrt(f2);
+//     gp=-f*fp/(sqf*xi*pow(M1*xi+sqf,2));
+//     return(gp);
+//     }
+
+
+// double getg(double x)
+// {
+//     double f,f2,xi,den,g;
+//     f=r*pow(x,4);
+//     f2=f*f;
+//     xi=sqrt(1+m1*f2);
+//     den=M1*xi+abs(f);
+//     g=xi/den;
+//     return(g);
 // }
+
+// double getgprime(double x)
+// {
+//     double f,f2,xi,fp,gp,signf;
+//     f=r*pow(x,4);
+//     f2=f*f;
+//     fp=4*x*x*x*r;
+//     xi=sqrt(1+m1*f2);
+//     signf= (f > 0) - (f < 0);
+//     gp=-signf*fp/(xi*pow(M1*xi+abs(f),2));
+//     return(gp);
+//     }
+
+
+
+
 
 
 /////////////////////////////////
@@ -135,7 +182,7 @@ vector<double> one_step(double dt, double numruns, int i)
 
     // set variables
     double q,p,f,g,gp,gdt,C;
-    int ns,nt,nsp;
+    int ns,nt,nsp,nsp2;
     // Save the values 
     vector<double> vec_q(numsam/printskip,0);
     vector<double> vec_p(numsam/printskip,0);
@@ -143,13 +190,14 @@ vector<double> one_step(double dt, double numruns, int i)
     // Compute the moments, so its done
     vector<double> moments(8,0);
     nsp=0;
-    #pragma omp parallel private(q,p,f,C,nt) shared(ns,vec_q,vec_p,moments,nsp)
+    nsp2=0;
+    #pragma omp parallel private(q,p,f,C,nt) shared(ns,vec_q,vec_p,moments,nsp,nsp2)
     #pragma omp for
     for(ns = 0; ns<numsam; ns++){
         // Normal generator 
         mt19937 generator(rd1());
         normal_distribution<double> normal(0, 1);
-        q = 1.;
+        q = 0.2;
         p = 0.;
         f = -Up(q);  
         for(nt = 0; nt<numruns; nt++)
@@ -184,20 +232,16 @@ vector<double> one_step(double dt, double numruns, int i)
             //**********
             f = -Up(q);
             p += 0.5*dt*f;
+
+	    if(nt%printskip2==0 && nt>burnin){
+		moments[0]+=q;
+		moments[1]+=q*q;
+		moments[2]+=q*q*q;
+        moments[3]+=q*q*q*q;
+		nsp2+=1;
+		}
         }
 
-    // compute the moments for p and for q 
-    // compute the moments for q 
-    moments[0]+=(q);
-    moments[1]+=q*q;
-    moments[2]+=(q)*q*q;
-    moments[3]+=q*q*q*q;
-
-    // compute the moments for p 
-    moments[4]+=p;
-    moments[5]+=p*p;
-    moments[6]+=p*p*p;
-    moments[7]+=p*p*p*p;
 
     // Save every printskip values    
     if(ns%printskip==0){
@@ -208,14 +252,10 @@ vector<double> one_step(double dt, double numruns, int i)
     }
 
 // rescale the moments 
-moments[0]=moments[0]/numsam;
-moments[1]=moments[1]/numsam;
-moments[2]=moments[2]/numsam;
-moments[3]=moments[3]/numsam;
-moments[4]=moments[4]/numsam;
-moments[5]=moments[5]/numsam;
-moments[6]=moments[6]/numsam;
-moments[7]=moments[7]/numsam;
+moments[0]=moments[0]/nsp2;
+moments[1]=moments[1]/nsp2;
+moments[2]=moments[2]/nsp2;
+moments[3]=moments[3]/nsp2;
 
 // save the some of the values generated. 
 string path=PATH;
@@ -246,7 +286,7 @@ vector<double> one_step_tr_B(double dt, double numruns, int i)
     random_device rd1;
     boost::random::mt19937 gen(rd1());
     double q,p,f,g,gp,gdt,C,g0,g1,g_av,g_av_sample;
-    int ns,nt,nsp;
+    int ns,nt,nsp,nsp2;
 
     // Savethe values 
     vector<double> vec_q((numsam/printskip),0);
@@ -258,15 +298,16 @@ vector<double> one_step_tr_B(double dt, double numruns, int i)
 
     // Initialise snapshot
     nsp=0;
+    nsp2=0;
     g_av_sample=0;
-    #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1,g_av) shared(ns,vec_q,vec_p,vec_g,moments,nsp,g_av_sample)
+    #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1,g_av) shared(ns,vec_q,vec_p,vec_g,moments,nsp,nsp2,g_av_sample)
     #pragma omp for
     for(ns = 0; ns<numsam; ns++){
         g_av=0;
         // Normal generator 
         mt19937 generator(rd1());
         normal_distribution<double> normal(0, 1);
-        q = 1.;
+        q = 0.2;
         p = 0.;
         g = getg(q);
         gdt = dt*g;
@@ -288,10 +329,10 @@ vector<double> one_step_tr_B(double dt, double numruns, int i)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(q+dt/4*p*g);
-            g1=getg(q+dt/4*p*g0);
-            g0=getg(q+dt/4*p*g1);
-            g1=getg(q+dt/4*p*g0);
+            g0=getg(q+gdt/4*p*g);
+            g1=getg(q+gdt/4*p*g0);
+            g0=getg(q+gdt/4*p*g1);
+            g1=getg(q+gdt/4*p*g0);
             gdt=g1*dt;
 
             q += 0.5*gdt*p;
@@ -308,10 +349,10 @@ vector<double> one_step_tr_B(double dt, double numruns, int i)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(q+dt/4*p*g);
-            g1=getg(q+dt/4*p*g0);
-            g0=getg(q+dt/4*p*g1);
-            g1=getg(q+dt/4*p*g0);
+            g0=getg(q+gdt/4*p*g);
+            g1=getg(q+gdt/4*p*g0);
+            g0=getg(q+gdt/4*p*g1);
+            g1=getg(q+gdt/4*p*g0);
             gdt=g1*dt;
             q += 0.5*gdt*p;
 
@@ -329,6 +370,14 @@ vector<double> one_step_tr_B(double dt, double numruns, int i)
             //* Save values of g to average
             //******************************
             g_av+=g;
+
+	    if (nt%printskip2==0 && nt>burnin){
+		moments[0]+=q;
+		moments[1]+=q*q;
+		moments[2]+=q*q*q;
+		moments[3]+=q*q*q*q;
+		nsp2+=1;	
+	        }
         }
 
     //*****************************
@@ -337,19 +386,7 @@ vector<double> one_step_tr_B(double dt, double numruns, int i)
     g_av=g_av/numruns;
     g_av_sample+=g_av;
     
-    // compute the moments for p and for q 
 
-    // compute the moments for q 
-    moments[0]+=q;
-    moments[1]+=q*q;
-    moments[2]+=q*q*q;
-    // moments[3]+=q*q*q*q;
-
-    // compute the moments for p 
-    moments[4]+=p;
-    moments[5]+=p*p;
-    moments[6]+=p*p*p;
-    moments[7]+=p*p*p*p;
 
     // Save every printskip values    
     if(ns%printskip==0){
@@ -364,20 +401,15 @@ vector<double> one_step_tr_B(double dt, double numruns, int i)
 
 
     // rescale the moments 
-    moments[0]=moments[0]/numsam;
-    moments[1]=moments[1]/numsam;
-    moments[2]=moments[2]/numsam;
+    moments[0]=moments[0]/nsp2;
+    moments[1]=moments[1]/nsp2;
+    moments[2]=moments[2]/nsp2;
+    moments[3]=moments[3]/nsp2;
 
     //*****************************
     //* Save values of g to average
     //******************************
-    moments[3]=g_av_sample/numsam; //instead of the moment, we will save the values of the average of g
-
-
-    moments[4]=moments[4]/numsam;
-    moments[5]=moments[5]/numsam;
-    moments[6]=moments[6]/numsam;
-    moments[7]=moments[7]/numsam;
+    moments[4]=g_av_sample/numsam; //instead of the moment, we will save the values of the average of g
 
 
     // save the some of the values generated. 
@@ -416,7 +448,7 @@ vector<double> one_step_tr_O(double dt, double numruns, int i)
     random_device rd1;
     boost::random::mt19937 gen(rd1());
     double q,p,f,g,gp,gdt,C,g0,g1,g_av,g_av_sample;
-    int ns,nt,nsp;
+    int ns,nt,nsp,nsp2;
 
     // Savethe values 
     vector<double> vec_q((numsam/printskip),0);
@@ -428,15 +460,16 @@ vector<double> one_step_tr_O(double dt, double numruns, int i)
 
     // Initialise snapshot
     nsp=0;
+    nsp2=0;
     g_av_sample=0;
-    #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1,g_av) shared(ns,vec_q,vec_p,vec_g,moments,nsp)
+    #pragma omp parallel private(q,p,f,C,nt,gdt,g,g0,g1,g_av) shared(ns,vec_q,vec_p,vec_g,moments,nsp,nsp2)
     #pragma omp for
     for(ns = 0; ns<numsam; ns++){
         g_av=0;
         // Normal generator 
         mt19937 generator(rd1());
         normal_distribution<double> normal(0, 1);
-        q = 1.;
+        q = 0.2;
         p = 0.;
         g = getg(q);
         gdt = dt*g;
@@ -457,10 +490,10 @@ vector<double> one_step_tr_O(double dt, double numruns, int i)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(q+dt/4*p*g);
-            g1=getg(q+dt/4*p*g0);
-            g0=getg(q+dt/4*p*g1);
-            g1=getg(q+dt/4*p*g0);
+            g0=getg(q+gdt/4*p*g);
+            g1=getg(q+gdt/4*p*g0);
+            g0=getg(q+gdt/4*p*g1);
+            g1=getg(q+gdt/4*p*g0);
             gdt=g1*dt;
 
             q += 0.5*gdt*p;
@@ -478,10 +511,10 @@ vector<double> one_step_tr_O(double dt, double numruns, int i)
             //* STEP A *
             //**********
             // fixed point iteration
-            g0=getg(q+dt/4*p*g);
-            g1=getg(q+dt/4*p*g0);
-            g0=getg(q+dt/4*p*g1);
-            g1=getg(q+dt/4*p*g0);
+            g0=getg(q+gdt/4*p*g);
+            g1=getg(q+gdt/4*p*g0);
+            g0=getg(q+gdt/4*p*g1);
+            g1=getg(q+gdt/4*p*g0);
             gdt=g1*dt;
             q += 0.5*gdt*p;
 
@@ -497,7 +530,14 @@ vector<double> one_step_tr_O(double dt, double numruns, int i)
             //* Save values of g to average
             //******************************
             g_av+=g;
-         
+         	
+	    if(nt%printskip2==0 && nt>burnin){
+		moments[0]+=q;
+		moments[1]+=q*q;
+		moments[2]+=q*q*q;
+		moments[3]+=q*q*q*q;
+		nsp2+=1;
+}
 
         }
 
@@ -507,20 +547,6 @@ vector<double> one_step_tr_O(double dt, double numruns, int i)
     g_av=g_av/numruns;
     g_av_sample+=g_av;
     
-    // compute the moments for p and for q 
-
-    // compute the moments for q 
-    moments[0]+=q;
-    moments[1]+=q*q;
-    moments[2]+=q*q*q;
-    moments[3]+=q*q*q*q;
-
-    // compute the moments for p 
-    moments[4]+=p;
-    moments[5]+=p*p;
-    moments[6]+=p*p*p;
-    moments[7]+=p*p*p*p;
-
     // Save every printskip values    
     if(ns%printskip==0){
         vec_q[nsp]=q;
@@ -532,18 +558,15 @@ vector<double> one_step_tr_O(double dt, double numruns, int i)
     }
 
     // rescale the moments 
-    moments[0]=moments[0]/numsam;
-    moments[1]=moments[1]/numsam;
-    moments[2]=moments[2]/numsam;
+    moments[0]=moments[0]/nsp2;
+    moments[1]=moments[1]/nsp2;
+    moments[2]=moments[2]/nsp2;
+    moments[3]=moments[3]/nsp2;
     //*****************************
     //* Save values of g to average
     //******************************
-    moments[3]=g_av_sample/numsam; //instead of the moment, we will save the values of the average of g
+    moments[4]=g_av_sample/numsam; //instead of the moment, we will save the values of the average of g
 
-    moments[4]=moments[4]/numsam;
-    moments[5]=moments[5]/numsam;
-    moments[6]=moments[6]/numsam;
-    moments[7]=moments[7]/numsam;
 
 
 
@@ -588,16 +611,18 @@ int main(void) {
     vector<double> moments_trB_2(dtlist.size(),0);
     vector<double> moments_trB_3(dtlist.size(),0);
     vector<double> moments_trB_4(dtlist.size(),0);
+    vector<double> vec_g_B(dtlist.size(),0);
 
     vector<double> moments_trO_1(dtlist.size(),0);
     vector<double> moments_trO_2(dtlist.size(),0);
     vector<double> moments_trO_3(dtlist.size(),0);
     vector<double> moments_trO_4(dtlist.size(),0);
+    vector<double> vec_g_O(dtlist.size(),0);
 
     for(int i = 0; i < dtlist.size(); i++){ // run the loop for ns samples
 
         double dti = dtlist[i];
-        double ni = T/dti;
+        double ni = Nt;
 
         // no adaptivity 
         vector<double> moments_di=one_step(dti,ni,i);
@@ -613,14 +638,16 @@ int main(void) {
         moments_trB_2[i]=moments_di[1];
         moments_trB_3[i]=moments_di[2];
         moments_trB_4[i]=moments_di[3];
- 
+        vec_g_B[i]=moments_di[4];
+
         // transformed with corr in step O 
         moments_di=one_step_tr_O(dti,ni,i);
         moments_trO_1[i]=moments_di[0];
         moments_trO_2[i]=moments_di[1];
         moments_trO_3[i]=moments_di[2];
         moments_trO_4[i]=moments_di[3];
- 
+        vec_g_O[i]=moments_di[4];
+
 
        // * SAVE THE COMPUTED MOMENTS IN A FILE
     /////////////////////////////////////////
@@ -671,7 +698,12 @@ int main(void) {
     copy(moments_trB_4.begin(), moments_trB_4.end(), out_itr);
     file.close();
 
-        // TRANSFORMED with corr in O 
+    file_name=path+"/vec_g_B.txt";
+    file.open(file_name,ios_base::out);
+    copy(vec_g_B.begin(), vec_g_B.end(), out_itr);
+    file.close();
+
+    // TRANSFORMED with corr in O 
     file_name=path+"/tr_moment1O.txt";
     file.open(file_name,ios_base::out);
     copy(moments_trO_1.begin(), moments_trO_1.end(), out_itr);
@@ -692,6 +724,11 @@ int main(void) {
     copy(moments_trO_4.begin(), moments_trO_4.end(), out_itr);
     file.close();
 
+    file_name=path+"/vec_g_O.txt";
+    file.open(file_name,ios_base::out);
+    copy(vec_g_O.begin(), vec_g_O.end(), out_itr);
+    file.close();
+
     // * SAVE THE TIME AND PARAMETERS OF THE SIMULATION IN A INFO FILE
     ///////////////////////////////////////////////////////////////////
     // find time by subtracting stop and start timepoints 
@@ -701,7 +738,7 @@ int main(void) {
     auto duration_ms = duration_cast<microseconds>(stop - start);
     // save the parameters in a file info
     // string parameters="M="+to_string(M)+"-m="+to_string(m)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-a="+to_string(a)+"-b="+to_string(b)+"-x0="+to_string(x0)+"-c="+to_string(c)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
-    string parameters="M1="+to_string(M1)+"-m1="+to_string(m1)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
+    string parameters="M1="+to_string(M1)+"-m1="+to_string(m1)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-r="+to_string(r)+"-d="+to_string(d)+"-c="+to_string(c)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     string information=path+"/parameters_used.txt";
     file.open(information,ios_base::out);
     file << parameters;
