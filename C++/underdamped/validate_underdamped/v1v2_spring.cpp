@@ -98,9 +98,9 @@ using namespace std;
 vector<double> dtlist = {0.2  , 0.179, 0.158, 0.137, 0.116, 0.094, 0.073, 0.052, 0.031,0.01 };
 #define r     1.5
 #define d     5.
-#define m    .9
+#define m    .1
 #define m1    3.
-#define M     1.5
+#define M     1.
 #define M1    1./M
 #define c     0.5
 
