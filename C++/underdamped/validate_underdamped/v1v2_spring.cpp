@@ -28,7 +28,7 @@ using namespace std::chrono;
 using namespace std;
 
 
-#define gamma           1.            // friction coefficient
+#define gamma           0.1            // friction coefficient
 #define tau             1.            // 'temperature'
 #define Nt              20000          // Number of steps forward in time
 #define numsam          5000       // total number of trajectories
@@ -38,108 +38,105 @@ using namespace std;
 
 ///////////////////// DEFINE POTENTIAL //////////////////////////////
 
-/////////////////////////////////
-// Spring potential definition //
-/////////////////////////////////
-#define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/spring_validate/v1"
-// #define PATH "./spring_a4_gamma01"
-// FOR A=4
-vector<double> dtlist ={0.7 , 0.63, 0.56,0.48,0.41,0.34,0.27, 0.19, 0.12, 0.05};
+// /////////////////////////////////
+// // Spring potential definition //
+// /////////////////////////////////
+// #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/spring_validate/v1"
+// // #define PATH "./spring_a4_gamma01"
+// // FOR A=4
+// vector<double> dtlist ={0.7 , 0.63, 0.56,0.48,0.41,0.34,0.27, 0.19, 0.12, 0.05};
 
-// FOR A =15
-//larger range of values 
-//vector<double> dtlist = {0.1  , 0.14 , 0.195,0.273, 0.38 , 0.531, 0.741, 1.034, 1.443, 2.014};
-//vector<double> dtlist = {2.014,1.443,1.034,0.741,0.531,0.38,0.273,0.195,0.14,0.1};
+// // FOR A =15
+// //larger range of values 
+// //vector<double> dtlist = {0.1  , 0.14 , 0.195,0.273, 0.38 , 0.531, 0.741, 1.034, 1.443, 2.014};
+// //vector<double> dtlist = {2.014,1.443,1.034,0.741,0.531,0.38,0.273,0.195,0.14,0.1};
 
-#define m               0.001
-#define M               1.1
-// Spring potential -- parameters of the potential 
-#define a               4.0
-#define b               0.1
-#define x0              0.5
-#define c               0.1
+// #define m               0.001
+// #define M               1.1
+// // Spring potential -- parameters of the potential 
+// #define a               2.75
+// #define b               0.1
+// #define x0              0.5
+// #define c               0.1
 
-long double Up(double x)
-{
-   long double xx02= (x-x0)*(x-x0);
-   long double wx =b/(b/a+xx02);
-    return (wx*wx+c)*x;
-}
-
-double getg(double x)
-{
-    double wx,f,xi,g;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    xi = f+m*m;
-    g = 1/(1/M+1/sqrt(xi));
-    return(g);
-
-}
-
-double getgprime(double x)
-{
-    double wx,f,fp,xi,gprime;
-    wx =(b/a+pow(x-x0,2))/b;
-    f = wx*wx;
-    fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
-    xi=sqrt(f+m*m);
-    gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
-    return(gprime);
-}
-
-
-///////////////////////////////////////////////////////////////
-///////////////////// Ben Potential //////////////////////////////
-///////////////////////////////////////////////////////////////
-// #define PATH "./pot_ben"
-// #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/spring_validate/v2";
-
-// vector<double> dtlist = {0.37,0.3456,0.3211,0.2967,0.2722,0.2478,0.2233,0.1989,0.1744,0.15};
-// #define r     1.5
-// #define d     5.
-// #define m    .9
-// #define m1    3.
-// #define M     1.5
-// #define M1    1./M
-// #define c     0.5
-
-// double Up(double x)
+// long double Up(double x)
 // {
-//     double res = x*x*x+d*cos(1+d*x);
-//     return res;
+//    long double xx02= (x-x0)*(x-x0);
+//    long double wx =b/(b/a+xx02);
+//     return (wx*wx+c)*x;
 // }
 
 // double getg(double x)
 // {
-//     double f,f2,xi,den,g;
-//     f=r*pow((x-0.1142)*(x+1.2160),2); //r*pow((x+0.5088)*(x-0.7270),2);     //r*pow((x-0.1142)*(x+0.5088)*(x-0.7270),2);
-//     f2=f*f;
-//     xi=sqrt(1+m1*f2);
-//     den=M1*xi+sqrt(f2);
-//     g=xi/den;
-//     // cout<<"\n";
-//     // cout<<g;
-//     // cout<<"\n";
+//     double wx,f,xi,g;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     xi = f+m*m;
+//     g = 1/(1/M+1/sqrt(xi));
 //     return(g);
+
 // }
 
 // double getgprime(double x)
 // {
-//     double f,f2,xi,fp,gp,sqf,x2,x3,x4,x5,x6;
-//     f=r*pow((x-0.1142)*(x+1.2160),2);    //r*(x-0.1142)*(x-0.1142); //r*pow((x+0.5088)*(x-0.7270),2);     //r*pow((x-0.1142)*(x+0.5088)*(x-0.7270),2);
-//     f2=f*f;
-//     x2=x*x;
-//     x3=x*x2;
-//     x4=x3*x;
-//     x5=x4*x;
-//     x6=x5*x;
-//     fp=r*(-0.306008 + 1.87246*x+ 6.6108*x2+4*x3); //2*r*(x-0.1142);    //r*(0.161423-1.38437*x-1.3092*x2+4*x3);   //r*(-0.0291454+0.181856*x +0.94148*x2-2.31787*x3-3.324*x4+6*x5);
-//     xi=sqrt(1+m1*f2);
-//     sqf=f/sqrt(f2);
-//     gp=-f*fp/(sqf*xi*pow(M1*xi+sqf,2));
-//     return(gp);
-//     }
+//     double wx,f,fp,xi,gprime;
+//     wx =(b/a+pow(x-x0,2))/b;
+//     f = wx*wx;
+//     fp = 4*(x-x0)*((b/a)+pow(x-x0,2))/(b*b);
+//     xi=sqrt(f+m*m);
+//     gprime= M*M*fp/(2*xi*(xi+M)*(xi+M));
+//     return(gprime);
+// }
+
+
+/////////////////////////////////////////////////////////////
+/////////////////// Ben Potential //////////////////////////////
+/////////////////////////////////////////////////////////////
+//#define PATH "./pot_ben"
+#define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/spring_validate/v2";
+
+vector<double> dtlist = {0.2  , 0.179, 0.158, 0.137, 0.116, 0.094, 0.073, 0.052, 0.031,0.01 };
+#define r     1.5
+#define d     5.
+#define m    .9
+#define m1    3.
+#define M     1.5
+#define M1    1./M
+#define c     0.5
+
+double Up(double x)
+{
+    double res = x*x*x+d*cos(1+d*x);
+    return res;
+}
+
+double getg(double x)
+{
+    double f,f2,xi,den,g;
+    f=r*pow((x-0.1142),2); //r*pow((x+0.5088)*(x-0.7270),2);     //r*pow((x-0.1142)*(x+0.5088)*(x-0.7270),2);
+    f2=f*f;
+    xi=sqrt(1+m1*f2);
+    den=M1*xi+sqrt(f2);
+    g=xi/den;
+    return(g);
+}
+
+double getgprime(double x)
+{
+    double f,f2,xi,fp,gp,sqf; //,x2,x3,x4,x5,x6;
+    f=r*pow((x-0.1142),2);    //r*(x-0.1142)*(x-0.1142); //r*pow((x+0.5088)*(x-0.7270),2);     //r*pow((x-0.1142)*(x+0.5088)*(x-0.7270),2);
+    f2=f*f;
+    // x2=x*x;
+    // x3=x*x2;
+    // x4=x3*x;
+    // x5=x4*x;
+    // x6=x5*x;
+    fp=r*2*(x-0.1142); //(-0.306008 + 1.87246*x+ 6.6108*x2+4*x3); //2*r*(x-0.1142);    //r*(0.161423-1.38437*x-1.3092*x2+4*x3);   //r*(-0.0291454+0.181856*x +0.94148*x2-2.31787*x3-3.324*x4+6*x5);
+    xi=sqrt(1+m1*f2);
+    sqf=f/sqrt(f2);
+    gp=-f*fp/(sqf*xi*pow(M1*xi+sqf,2));
+    return(gp);
+    }
 
 
 // double getg(double x)
@@ -737,7 +734,7 @@ int main(void) {
     auto duration_s = duration_cast<seconds>(stop - start);
     auto duration_ms = duration_cast<microseconds>(stop - start);
     // save the parameters in a file info
-    // string parameters="M="+to_string(M)+"-m="+to_string(m)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-a="+to_string(a)+"-b="+to_string(b)+"-x0="+to_string(x0)+"-c="+to_string(c)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
+    //string parameters="M="+to_string(M)+"-m="+to_string(m)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-a="+to_string(a)+"-b="+to_string(b)+"-x0="+to_string(x0)+"-c="+to_string(c)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     string parameters="M1="+to_string(M1)+"-m1="+to_string(m1)+"-gamma="+to_string(gamma)+"-tau="+to_string(tau)+"-r="+to_string(r)+"-d="+to_string(d)+"-c="+to_string(c)+"-Ns="+to_string(numsam)+"-time_sim_min="+to_string(duration_m.count())+"-time_sim_sec="+to_string(duration_s.count())+"-time_sim_ms="+to_string(duration_ms.count());
     string information=path+"/parameters_used.txt";
     file.open(information,ios_base::out);
