@@ -30,11 +30,11 @@ using namespace std;
 
 #define gamma           0.1            // friction coefficient
 #define tau             1.            // 'temperature'
-#define Nt              60000         // Number of steps forward in time
+#define Nt              20000         // Number of steps forward in time
 #define numsam          5000       // total number of trajectories
-#define printskip       10		// skip this number when saving final values of the vector (should be high as we can't save 10^7 traj) vector
+#define printskip       100		// skip this number when saving final values of the vector (should be high as we can't save 10^7 traj) vector
 #define printskip2	    100		// use every printskip2 val in a trajectory for the computation of the observable, burnin is 10 000
-#define burnin          10000   // number of values to skip before saving observable
+#define burnin          5000   // number of values to skip before saving observable
 
 ///////////////////// DEFINE POTENTIAL //////////////////////////////
 
