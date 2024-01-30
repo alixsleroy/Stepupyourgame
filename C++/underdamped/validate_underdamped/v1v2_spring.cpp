@@ -30,7 +30,7 @@ using namespace std;
 
 #define gamma           0.1            // friction coefficient
 #define tau             1.            // 'temperature'
-#define Nt              20000          // Number of steps forward in time
+#define Nt              60000         // Number of steps forward in time
 #define numsam          5000       // total number of trajectories
 #define printskip       10		// skip this number when saving final values of the vector (should be high as we can't save 10^7 traj) vector
 #define printskip2	    100		// use every printskip2 val in a trajectory for the computation of the observable, burnin is 10 000
@@ -95,9 +95,11 @@ using namespace std;
 //#define PATH "./pot_ben"
 #define PATH   "/home/s2133976/OneDrive/ExtendedProject/Code/Stepupyourgame/Stepupyourgame/data/C/underdamped/spring_validate/v2";
 
-vector<double> dtlist = {0.2  , 0.179, 0.158, 0.137, 0.116, 0.094, 0.073, 0.052, 0.031,0.01 };
+//vector<double> dtlist = {0.2  , 0.179, 0.158, 0.137, 0.116, 0.094, 0.073, 0.052, 0.031,0.01 };
+
+vector<double> dtlist = {0.6   , 0.5344, 0.4689, 0.4033, 0.3378, 0.2722, 0.2067, 0.1411,0.0756, 0.01};
 #define r     1.5
-#define d     5.
+#define d     1.5
 #define m    .1
 #define m1    3.
 #define M     1.
